@@ -12,7 +12,8 @@ in
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ./morgoth/hardware-configuration.nix
+      ./modules/fonts.nix
     ];
 
   boot.loader.grub = {
@@ -76,17 +77,6 @@ in
     libxslt
     xorg.libX11
   ];
-
-  fonts = {
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
-    fonts = with pkgs; [
-      inconsolata
-      ubuntu_font_family
-      dejavu_fonts
-      source-code-pro
-    ];
-  };
 
   hardware.pulseaudio.enable = true;
 

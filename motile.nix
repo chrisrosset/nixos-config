@@ -7,7 +7,8 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ./motile/hardware-configuration.nix
+      ./modules/fonts.nix
     ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -33,18 +34,6 @@
   #   consoleKeyMap = "us";
   #   defaultLocale = "en_US.UTF-8";
   # };
-
-  fonts = {
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
-    fonts = with pkgs; [
-      inconsolata
-      ubuntu_font_family
-      dejavu_fonts
-      source-code-pro
-      terminus_font
-    ];
-  };
 
   time.timeZone = "America/New_York";
 
