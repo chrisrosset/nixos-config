@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./motile/hardware-configuration.nix
       ./modules/fonts.nix
+      ./modules/kde.nix
     ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -19,14 +20,11 @@
     device = "/dev/nvme0n1";
   };
 
-  networking.hostName = "motile"; # Define your hostname.
-  networking.networkmanager.enable = true;
+  networking.hostName = "motile";
   networking.useDHCP = false;
   networking.interfaces.enp2s0.useDHCP = true;
   networking.interfaces.wlp3s0.useDHCP = true;
   networking.firewall.enable = false;
-
-  hardware.pulseaudio.enable = true;
 
   # Select internationalisation properties.
   # i18n = {
@@ -40,7 +38,6 @@
   environment.systemPackages = with pkgs; [
     ag
     alacritty
-    ark
     aspell
     aspellDicts.en
     aspellDicts.en-computers
@@ -53,12 +50,14 @@
     gnumake
     htop
     ledger
+    ncdu
     nethack
     pv
     ripgrep
     tmux
     tree
     vim
+    vlc
     wget
     zsh
   ];
@@ -75,17 +74,13 @@
   services.openssh.enable = true;
 
   services.xserver = {
-    enable = true;
     layout = "us";
-    # xkbOptions = "eurosign:e";
 
-    libinput.enable = true; # touchpad support
-
-    desktopManager = {
-      #gnome3.enable = true;
-      plasma5.enable = true;
-      #xfce.enable = true;
-      xterm.enable = false;
+    # touchpad support
+    libinput = {
+      enable = true;
+      naturalScrolling = true;
+      disableWhileTyping = true;
     };
   };
 
