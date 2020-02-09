@@ -4,6 +4,7 @@
   environment.systemPackages = with pkgs; [
     ark
     gwenview
+    okular
   ];
 
   hardware.pulseaudio.enable = true;

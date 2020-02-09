@@ -49,6 +49,7 @@
     git
     gnumake
     htop
+    keepassxc
     ledger
     ncdu
     nethack
