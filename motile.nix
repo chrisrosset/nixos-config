@@ -41,6 +41,7 @@
     aspell
     aspellDicts.en
     aspellDicts.en-computers
+    calibre
     crawl
     curl
     emacs
@@ -55,6 +56,7 @@
     nethack
     pv
     ripgrep
+    sshfs
     tmux
     tree
     vim
