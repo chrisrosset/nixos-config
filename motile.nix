@@ -74,6 +74,15 @@
   services.acpid.enable = true;
   services.openssh.enable = true;
 
+  services.syncthing = {
+    enable = true;
+    openDefaultPorts = true;
+    user = "ctr";
+    dataDir = "/home/ctr/syncthing/";
+    configDir = "/home/ctr/.config/syncthing";
+
+  };
+
   services.xserver = {
     layout = "us";
 
