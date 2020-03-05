@@ -61,8 +61,8 @@
 
   # List services that you want to enable:
 
-  services.tlp.enable = true;
   services.acpid.enable = true;
+  services.tlp.enable = true;
   services.openssh.enable = true;
 
   services.syncthing = {
@@ -73,6 +73,8 @@
     configDir = "/home/ctr/.config/syncthing";
 
   };
+
+  services.udev.packages = [ pkgs.yubikey-personalization ];
 
   services.xserver = {
     layout = "us";
