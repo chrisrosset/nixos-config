@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./motile/hardware-configuration.nix
+      ./modules/cli.nix
       ./modules/fonts.nix
       ./modules/kde.nix
     ];
@@ -36,32 +37,20 @@
   time.timeZone = "America/New_York";
 
   environment.systemPackages = with pkgs; [
-    ag
     alacritty
     aspell
     aspellDicts.en
     aspellDicts.en-computers
     calibre
     crawl
-    curl
     emacs
-    file
     firefox
     git
     gnumake
-    htop
     keepassxc
     ledger
-    ncdu
     nethack
-    pv
-    ripgrep
-    sshfs
-    tmux
-    tree
-    vim
     vlc
-    wget
     zsh
   ];
 

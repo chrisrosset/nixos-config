@@ -13,6 +13,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./morgoth/hardware-configuration.nix
+      ./modules/cli.nix
       ./modules/fonts.nix
     ];
 
@@ -26,7 +27,6 @@ in
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
     alacritty
-    ag
     calibre
     coreutils
     digikam
@@ -34,14 +34,12 @@ in
     emacs
     fcron
     feh
-    file
     firefox
     gcc
     gimp
     git
     gnumake
     gparted
-    htop
     iotop
     keepassWithPlugins
     ledger
@@ -52,16 +50,11 @@ in
     pkgconfig
     python
     python3
-    tmux
     transmission_gtk
-    tree
     sakura
     st
     syncthing
     which
-    wget
-    unzip
-    vim
     vlc
     zlib
     zsh

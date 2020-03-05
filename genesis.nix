@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./genesis/hardware-configuration.nix
       ./genesis/nixos-in-place.nix
+      ./modules/cli.nix
     ];
 
   boot.loader.grub.enable = true;
@@ -19,10 +20,6 @@
   time.timeZone = "UTC";
 
   environment.systemPackages = with pkgs; [
-    git
-    wget
-    vim
-    tmux
   ];
 
   services.openssh = {
