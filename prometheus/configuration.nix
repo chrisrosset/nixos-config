@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 
 {
@@ -10,12 +6,20 @@
       ./hardware-configuration.nix
     ];
 
+  hardware.bluetooth.enable = true;
+
   # packages
   environment.systemPackages = with pkgs; [
+      cron
+      docker
       git
+      gnumake
+      fortune
       hdparm
       htop
+      ncdu
       pv
+      samba
       screen
       tmux
       vim
@@ -31,54 +35,50 @@
   networking.hostName = "prometheus";
   networking.hostId   = "428dc8b7";
   networking.firewall.enable    = false;
-  networking.firewall.allowPing = true;
-  networking.firewall.allowedTCPPorts = [ 445 139 ];
-  networking.firewall.allowedUDPPorts = [ 137 138 ];
 
   fileSystems = [
-    # Hard Drives
+    # RAID Array
     {
-      mountPoint = "/mnt/bay1";
-      device = "/dev/disk/by-uuid/cb90ee6f-e901-4751-81b4-38f01c8da4d6";
-      fsType = "ext4";
-    }
-    {
-      mountPoint = "/mnt/bay2";
-      device = "/dev/disk/by-uuid/80c8651d-866f-4eec-8cd1-6e965ef3fd81";
+      mountPoint = "/mnt/raid";
+      label = "data";
       fsType = "ext4";
     }
 
     # Network binds
     {
       mountPoint = "/exports/movies";
-      device = "/mnt/bay1/movies";
-      options = "bind";
+      device = "/mnt/raid/movies";
+      options = [ "bind" ];
     }
-  
+
     {
       mountPoint = "/exports/photos";
-      device = "/mnt/bay2/photos";
-      options = "bind";
+      device = "/mnt/raid/photos";
+      options = [ "bind" ];
     }
-  
+
     {
       mountPoint = "/exports/random";
-      device = "/mnt/bay2/random";
-      options = "bind";
+      device = "/mnt/raid/random";
+      options = [ "bind" ];
     }
-  
+
     {
       mountPoint = "/exports/series";
-      device = "/mnt/bay1/series";
-      options = "bind";
+      device = "/mnt/raid/series";
+      options = [ "bind" ];
     }
   ];
 
-  #users.mutableUsers = false;
-  users.extraUsers.ctr = {
-    isNormalUser = true;
-    uid = 1000;
-    shell = "${pkgs.zsh}/bin/zsh";
+  security.sudo.enable = true;
+
+  users.extraUsers = {
+    ctr = {
+      isNormalUser = true;
+      uid = 1000;
+      shell = "${pkgs.zsh}/bin/zsh";
+      extraGroups = [ "wheel" "nogroup" ];
+    };
   };
 
 
@@ -91,14 +91,26 @@
 
   # List services that you want to enable:
 
-  services.avahi.enable   = true;
-  services.avahi.nssmdns  = true;
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      userServices = true;
+      addresses = true;
+      domain = true;
+    };
+  };
 
   services.openssh.enable = true;
   services.openssh.permitRootLogin = "yes";
 
   services.ntp.enable     = true;
-  time.timeZone = "Europe/London";
+  time.timeZone = "UTC";
+
+  services.cron = {
+      enable = true;
+  };
 
   services.samba.enable   = true;
   services.samba.nsswins  = true;
@@ -114,7 +126,7 @@
       public = yes
       only guest = yes
       writable = yes
-  
+
     [photos]
       path = /exports/photos
       public = yes
@@ -134,4 +146,5 @@
       writable = yes
   '';
 
+  virtualisation.docker.enable = true;
 }
