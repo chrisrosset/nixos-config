@@ -3,7 +3,10 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
+let
+  a = import ./modules/syncthing.nix;
+  mySshKeys = import ./modules/sshkeys.nix;
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -76,6 +79,19 @@
     dataDir = "/home/ctr/syncthing/";
     configDir = "/home/ctr/.config/syncthing";
 
+    declarative = {
+      overrideDevices = true;
+      devices = a.devices;
+
+      overrideFolders = true;
+      folders = {
+        "/home/ctr/syncthing/default" = {
+          id = "sync-default";
+          label = "Default";
+          devices = ["morgoth" "motoz" "prometheus" "s71a" ];
+        };
+      };
+    };
   };
 
   services.udev.packages = [ pkgs.yubikey-personalization ];
@@ -93,13 +109,14 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   #users.mutableUsers = false;
-  users.users.ctr = {
+  users.users.ctr = with mySshKeys; {
     isNormalUser = true;
     group = "users";
     uid = 1000;
     home = "/home/ctr";
     extraGroups = [ "wheel" "networkmanager" ];
     shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = [ ctr.morgoth ctr.motile ];
   };
 
   # This value determines the NixOS release with which your system is to be

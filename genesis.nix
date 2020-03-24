@@ -1,4 +1,7 @@
 { config, pkgs, ... }:
+let
+  mySshKeys = import ./modules/sshkeys.nix;
+in
 {
   imports = [
       ./genesis/hardware-configuration.nix
@@ -23,12 +26,13 @@
   system.stateVersion = "19.09";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.extraUsers.ctr = {
+  users.users.ctr = {
     isNormalUser = true;
     group = "users";
     uid = 1000;
     home = "/home/ctr";
     extraGroups = [ "wheel" ];
+    openssh.authorizedKeys.keys = with mySshKeys; [ ctr.morgoth ctr.motile ];
   };
 
   time.timeZone = "UTC";
