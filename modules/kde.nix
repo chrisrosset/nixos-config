@@ -1,10 +1,14 @@
 { config, pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; with pkgs.kdeApplications; [
     ark
     gwenview
+    kdialog
+    krita
     okular
+    qbittorrent
+    spectacle
   ];
 
   hardware.pulseaudio.enable = true;

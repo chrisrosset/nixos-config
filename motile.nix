@@ -13,19 +13,17 @@
       ./modules/kde.nix
     ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  boot.loader.grub = {
-    enable = true;
-    version = 2;
-    device = "/dev/nvme0n1";
+  boot = {
+    loader = {
+      grub = {
+        device = "/dev/nvme0n1";
+        enable = true;
+        version = 2;
+      };
+      timeout = 15;
+    };
+    kernelPackages = pkgs.linuxPackages_latest;
   };
-
-  networking.hostName = "motile";
-  networking.useDHCP = false;
-  networking.interfaces.enp2s0.useDHCP = true;
-  networking.interfaces.wlp3s0.useDHCP = true;
-  networking.firewall.enable = false;
 
   # Select internationalisation properties.
   # i18n = {
@@ -34,32 +32,38 @@
   #   defaultLocale = "en_US.UTF-8";
   # };
 
-  time.timeZone = "America/New_York";
-
   environment.systemPackages = with pkgs; [
     alacritty
     aspell
     aspellDicts.en
     aspellDicts.en-computers
     calibre
+    chromium
     crawl
     emacs
     firefox
     git
     gnumake
+    graphviz
+    gzdoom
     keepassxc
     ledger
     nethack
+    ntfs3g
     vlc
     zsh
   ];
+
+  networking.hostName = "motile";
+  networking.useDHCP = false;
+  networking.interfaces.enp2s0.useDHCP = true;
+  networking.interfaces.wlp3s0.useDHCP = true;
+  networking.firewall.enable = false;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
   # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
-
-  # List services that you want to enable:
 
   services.acpid.enable = true;
   services.tlp.enable = true;
@@ -103,5 +107,8 @@
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "19.09"; # Did you read the comment?
+
+  time.timeZone = "America/New_York";
+
 }
 
