@@ -11,6 +11,7 @@
     ncdu
     pv
     ripgrep
+    rsync
     sshfs
     tmux
     tree
