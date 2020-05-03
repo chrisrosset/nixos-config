@@ -9,6 +9,7 @@
     file
     htop
     ncdu
+    nmap
     pv
     ripgrep
     rsync
