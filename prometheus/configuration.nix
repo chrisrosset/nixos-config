@@ -27,39 +27,34 @@ in
       zsh
   ];
 
-  fileSystems = [
+  fileSystems = {
     # RAID Array
-    {
-      mountPoint = "/mnt/raid";
+    "/mnt/raid" = {
       label = "data";
       fsType = "ext4";
-    }
+    };
 
     # Network binds
-    {
-      mountPoint = "/exports/movies";
+    "/exports/movies" = {
       device = "/mnt/raid/movies";
       options = [ "bind" ];
-    }
+    };
 
-    {
-      mountPoint = "/exports/photos";
+    "/exports/photos" = {
       device = "/mnt/raid/photos";
       options = [ "bind" ];
-    }
+    };
 
-    {
-      mountPoint = "/exports/random";
+    "/exports/random" = {
       device = "/mnt/raid/random";
       options = [ "bind" ];
-    }
+    };
 
-    {
-      mountPoint = "/exports/series";
+    "/exports/series" = {
       device = "/mnt/raid/series";
       options = [ "bind" ];
-    }
-  ];
+    };
+  };
 
   hardware.bluetooth.enable = true;
 
