@@ -22,6 +22,7 @@ in
       gnumake
       fortune
       hdparm
+      mosquitto
       samba
       zsh
   ];
