@@ -11,6 +11,7 @@
     ncdu
     nmap
     pv
+    python3
     ripgrep
     rsync
     sshfs
