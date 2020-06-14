@@ -9,6 +9,7 @@
     okular
     qbittorrent
     spectacle
+    xclip
   ];
 
   hardware.pulseaudio.enable = true;
