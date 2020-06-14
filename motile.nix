@@ -54,8 +54,10 @@ in
     nethack
     ntfs3g
     vlc
+    xorg.xmodmap
     zsh
   ];
+
 
   networking.hostName = "motile";
   networking.useDHCP = false;
