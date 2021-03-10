@@ -4,10 +4,13 @@
 {
   environment.systemPackages = with pkgs; [
     ag
+    coreutils
     curl
-    git
     file
+    git
+    gnumake
     htop
+    iotop
     ncdu
     nmap
     pv
@@ -17,8 +20,9 @@
     sshfs
     tmux
     tree
-    vim
-    wget
     unzip
+    vim
+    which
+    wget
   ];
 }
