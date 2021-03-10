@@ -97,6 +97,7 @@ in
     home = "/home/ctr";
     extraGroups = [ "wheel" "networkmanager" ];
     shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
   };
 
   system.stateVersion = "20.09"; # change with care

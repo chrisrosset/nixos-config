@@ -131,6 +131,7 @@ in
     home = "/home/ctr";
     uid = 1000;
     shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
   };
 
   virtualisation.virtualbox.host.enable = true;

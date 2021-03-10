@@ -32,7 +32,7 @@ in
     uid = 1000;
     home = "/home/ctr";
     extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = with mySshKeys; [ ctr.morgoth ctr.motile ];
+    openssh.authorizedKeys.keys = mySshKeys.personal;
   };
 
   time.timeZone = "UTC";

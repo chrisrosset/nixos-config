@@ -1,8 +1,5 @@
 { config, pkgs, ... }:
 
-let
-  mySshKeys = import ../modules/sshkeys.nix;
-in
 {
   imports =
     [
@@ -137,7 +134,7 @@ guest account = nobody
       uid = 1000;
       shell = "${pkgs.zsh}/bin/zsh";
       extraGroups = [ "wheel" "nogroup" ];
-      openssh.authorizedKeys.keys = with mySshKeys; [ ctr.morgoth ctr.motile ];
+      openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
     };
 
     hass.isNormalUser = true;
