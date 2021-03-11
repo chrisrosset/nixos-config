@@ -17,10 +17,12 @@ in
   environment.systemPackages = with pkgs; [
     alacritty
     calibre
-    emacs
-    firefox
+    ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [vterm]))
+    firefox-bin
+    libvterm-neovim
     keepassxc
     sqlite
+    vlc
   ];
 
   networking.hostName = "lemur";
