@@ -1,9 +1,6 @@
 { config, pkgs, ... }:
 
 let
-  keepassWithPlugins = pkgs.keepass.override {
-    plugins = [ pkgs.keepass-keepasshttp ];
-  };
   syncthingCfg = import ./modules/syncthing.nix;
 in
 {
@@ -22,7 +19,7 @@ in
     calibre
     emacs
     firefox
-    keepassWithPlugins
+    keepassxc
     sqlite
   ];
 
