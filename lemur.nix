@@ -15,14 +15,7 @@ in
     ./modules/kde.nix
   ];
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-  };
+  nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
     alacritty
