@@ -1,7 +1,8 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   syncthingCfg = import ./modules/syncthing.nix;
+  wireguardCfg = import ./modules/wireguard.nix;
 in
 {
   imports = [
@@ -25,7 +26,11 @@ in
     vlc
   ];
 
-  networking.hostName = "lemur";
+  networking = rec {
+    hostName = "lemur";
+    extraHosts = wireguardCfg.extraHosts;
+    wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
+  };
 
   # Enable the X11 windowing system.
   services.xserver = {
