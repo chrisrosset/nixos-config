@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  mySshKeys = import ./modules/sshkeys.nix;
+  wireguardCfg = import ./modules/wireguard.nix;
 in
 {
   imports = [
@@ -10,10 +10,43 @@ in
     ];
 
   boot.cleanTmpDir = true;
+  boot.kernelPackages = pkgs.linuxPackages_5_6;
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+  };
 
   environment.systemPackages = with pkgs; [];
 
   networking.hostName = "genesis";
+  networking.firewall = {
+    enable = false;
+    allowPing = true;
+    allowedTCPPorts = [ 22 80 443 wireguardCfg.serverPort ];
+  };
+
+  networking.nat = {
+    enable = true;
+    externalInterface = "eth0";
+    internalInterfaces = [ "wg0" ];
+  };
+
+  networking.wireguard.interfaces = {
+    wg0 = {
+      ips = [ "192.168.200.1/24" ];
+      listenPort = wireguardCfg.serverPort;
+      privateKeyFile = "/root/wireguard/genesis.key";
+
+      postSetup = ''
+        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 192.168.200.0/24 -o eth0 -j MASQUERADE
+      '';
+
+      postShutdown = ''
+        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 192.168.200.0/24 -o eth0 -j MASQUERADE
+      '';
+
+      peers = wireguardCfg.getServerPeers "/root/wireguard";
+    };
+  };
 
   services = {
     openssh = {
@@ -32,7 +65,7 @@ in
     uid = 1000;
     home = "/home/ctr";
     extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = mySshKeys.personal;
+    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
   };
 
   time.timeZone = "UTC";

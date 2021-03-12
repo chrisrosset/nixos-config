@@ -1,5 +1,8 @@
 { config, pkgs, ... }:
 
+let
+  wireguardCfg = import ./modules/wireguard.nix;
+in
 {
   imports =
     [
@@ -62,9 +65,13 @@
   #   defaultLocale = "en_US.UTF-8";
   # };
 
-  networking.hostName = "prometheus";
-  networking.hostId = "428dc8b7";
-  networking.firewall.enable = false;
+  networking = {
+    firewall.enable = false;
+    hostName = "prometheus";
+    hostId = "428dc8b7";
+    extraHosts = wireguardCfg.extraHosts;
+    wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
+  };
 
   security.sudo.enable = true;
 
