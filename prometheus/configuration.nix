@@ -1,7 +1,8 @@
 { config, pkgs, ... }:
 
 let
-  wireguardCfg = import ./modules/wireguard.nix;
+  syncthingCfg = import ../modules/syncthing.nix;
+  wireguardCfg = import ../modules/wireguard.nix;
 in
 {
   imports =
@@ -65,7 +66,7 @@ in
   #   defaultLocale = "en_US.UTF-8";
   # };
 
-  networking = {
+  networking = rec {
     firewall.enable = false;
     hostName = "prometheus";
     hostId = "428dc8b7";
@@ -118,6 +119,12 @@ guest account = nobody
   only guest = yes
   writable = yes
 
+[photos-kraken]
+  path = /mnt/raid/photos-kraken
+  public = yes
+  only guest = yes
+  writable = no
+
 [random]
   path = /exports/random
   public = yes
@@ -131,6 +138,34 @@ guest account = nobody
   writable = yes
 '';
     };
+
+    syncthing = {
+      enable = true;
+      openDefaultPorts = true;
+      user = "ctr";
+      dataDir = "/mnt/raid/syncthing/";
+      configDir = "/home/ctr/.config/syncthing";
+
+      declarative = {
+        overrideDevices = true;
+        devices = syncthingCfg.devices;
+
+        overrideFolders = true;
+        folders = {
+          "/mnt/raid/syncthing/default" = {
+            id = "sync-default";
+            label = "Default";
+            devices = syncthingCfg.groups.standard;
+          };
+
+          "/mnt/raid/syncthing/Calibre" = {
+            id = "sync-calibre";
+            label = "Calibre";
+            devices = syncthingCfg.groups.pcs;
+          };
+        };
+      };
+    };
   };
 
   time.timeZone = "UTC";
@@ -141,7 +176,7 @@ guest account = nobody
       uid = 1000;
       shell = "${pkgs.zsh}/bin/zsh";
       extraGroups = [ "wheel" "nogroup" ];
-      openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+      openssh.authorizedKeys.keys = (import ../modules/sshkeys.nix).personal;
     };
 
     hass.isNormalUser = true;
