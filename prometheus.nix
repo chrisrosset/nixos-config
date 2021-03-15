@@ -1,14 +1,15 @@
 { config, pkgs, ... }:
 
 let
-  syncthingCfg = import ../modules/syncthing.nix;
-  wireguardCfg = import ../modules/wireguard.nix;
+  syncthingCfg = import ./modules/syncthing.nix;
+  wireguardCfg = import ./modules/wireguard.nix;
 in
 {
   imports =
     [
-      ../modules/cli.nix
-      ./hardware-configuration.nix
+      ./hardware/prometheus.nix
+      ./modules/cli.nix
+      #./monit.nix
     ];
 
   boot.loader.grub = {
@@ -176,7 +177,7 @@ guest account = nobody
       uid = 1000;
       shell = "${pkgs.zsh}/bin/zsh";
       extraGroups = [ "wheel" "nogroup" ];
-      openssh.authorizedKeys.keys = (import ../modules/sshkeys.nix).personal;
+      openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
     };
 
     hass.isNormalUser = true;

@@ -12,7 +12,7 @@ in
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./morgoth/hardware-configuration.nix
+      ./hardware/morgoth.nix
       ./modules/cli.nix
       ./modules/fonts.nix
     ];
