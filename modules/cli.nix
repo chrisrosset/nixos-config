@@ -4,8 +4,10 @@
 {
   environment.systemPackages = with pkgs; [
     ag
+    bat
     coreutils
     curl
+    fdupes
     file
     git
     gnumake
@@ -14,17 +16,24 @@
     iotop
     iperf
     iperf3
+    jq
+    killall
+    loc
     mosh
     ms-sys
     ncdu
     nmap
     ntfs3g
+    parallel
     parted
     pv
     python3
+    qrencode
     ripgrep
     rsync
+    smartmontools
     sshfs
+    strace
     tcpdump
     tmux
     tree
@@ -33,5 +42,6 @@
     w3m
     wget
     which
+    youtube-dl
   ];
 }

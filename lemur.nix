@@ -17,11 +17,22 @@ in
 
   environment.systemPackages = with pkgs; [
     alacritty
+    aspell
+    aspellDicts.en
+    aspellDicts.en-computers
+    avahi
     calibre
-    ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [vterm]))
+    ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
+      forge
+      plantuml-mode
+      vterm
+    ]))
     firefox-bin
+    ghidra-bin
+    graphviz-nox
     libvterm-neovim
     keepassxc
+    plantuml
     sqlite
     vlc
   ];
@@ -53,6 +64,7 @@ in
 
   services = {
     acpid.enable = true;
+    fstrim.enable = true;
     openssh.enable = true;
 
     syncthing = {

@@ -9,6 +9,7 @@
       inconsolata
       liberation_ttf # libre corefonts replacement
       source-code-pro
+      symbola
       terminus_font
       ubuntu_font_family
     ];

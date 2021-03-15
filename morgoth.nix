@@ -10,8 +10,8 @@ let
   };
 in
 {
-  imports =
-    [ # Include the results of the hardware scan.
+  imports = [
+      ./hardware/filco-jp.nix
       ./hardware/morgoth.nix
       ./modules/cli.nix
       ./modules/fonts.nix
@@ -28,19 +28,14 @@ in
   environment.systemPackages = with pkgs; [
     alacritty
     calibre
-    coreutils
     digikam
     docker
     emacs
-    fcron
     feh
     firefox
     gcc
     gimp
-    git
-    gnumake
     gparted
-    iotop
     keepassWithPlugins
     ledger
     ledger-web
@@ -51,17 +46,10 @@ in
     python
     python3
     transmission_gtk
-    sakura
-    st
     syncthing
-    which
     vlc
     zlib
     zsh
-
-    ntfs3g
-    parted
-    ms-sys
 
     #cura
 
@@ -80,17 +68,6 @@ in
   networking.firewall.enable = false;
   networking.hostName = "morgoth"; # Define your hostname.
   networking.wireless.enable = false;
-
-  # List services that you want to enable:
-  services.cron = {
-    enable = true;
-    systemCronJobs = [
-      # Remaps Japanese unused modifier keys to L/R Ctrl and Caps Lock to Backspace
-      "@reboot root setkeycodes 0x7b 29 0x79 97 0x3a 14"
-    ];
-  };
-
-  services.fcron = { enable = true; };
 
   services.openssh.enable = true;
 

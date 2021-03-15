@@ -21,9 +21,7 @@ in
   environment.systemPackages = with pkgs; [
       cron
       docker
-      gnumake
       fortune
-      hdparm
       mosquitto
       samba
       zsh
