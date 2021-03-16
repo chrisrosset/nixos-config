@@ -162,6 +162,13 @@ guest account = nobody
             label = "Calibre";
             devices = syncthingCfg.groups.pcs;
           };
+
+          "/mnt/raid/syncthing/s71-photos" = {
+            id = "sm-a715f_ntzx-photos";
+            label = "S71 Photos";
+            devices = [ "s71a" ];
+            type = "receiveonly";
+          };
         };
       };
     };
