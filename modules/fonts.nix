@@ -2,14 +2,13 @@
 
 {
   fonts = {
-    enableFontDir = true;
+    fontDir.enable = true;
     enableGhostscriptFonts = true;
     fonts = with pkgs; [
       dejavu_fonts
       inconsolata
       liberation_ttf # libre corefonts replacement
       source-code-pro
-      symbola
       terminus_font
       ubuntu_font_family
     ];

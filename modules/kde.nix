@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; with pkgs.kdeApplications; [
+  environment.systemPackages = with pkgs; with pkgs.plasma5Packages.kdeApplications; [
     ark
     gwenview
     kdialog

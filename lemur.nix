@@ -27,7 +27,7 @@ in
       plantuml-mode
       vterm
     ]))
-    firefox-bin
+    firefox
     ghidra-bin
     graphviz-nox
     libvterm-neovim
@@ -54,8 +54,10 @@ in
     layout = "us";
     libinput = {
       enable = true;
-      naturalScrolling = true;
-      disableWhileTyping = true;
+      touchpad = {
+        naturalScrolling = true;
+        disableWhileTyping = false;
+      };
     };
 
     videoDrivers = [ "modesetting" ];

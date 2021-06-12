@@ -28,11 +28,14 @@
     driSupport = true;
     extraPackages = with pkgs; [ intel-media-driver ];
   };
-
   hardware.enableRedistributableFirmware = true;
-  hardware.system76.enableAll = true;
+
+  # No lemp10 support as of 21.05
+  hardware.system76.enableAll = false;
 
   swapDevices = [{ device = "/dev/disk/by-uuid/6a5e0c75-0b2f-4f2b-a31b-910ed2857782"; }];
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+
+  services.hardware.bolt.enable = true;
 }
