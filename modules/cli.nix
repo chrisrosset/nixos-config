@@ -37,6 +37,7 @@
     tcpdump
     tmux
     tree
+    unar
     unzip
     vim
     w3m
