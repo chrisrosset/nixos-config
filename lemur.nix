@@ -10,6 +10,7 @@ in
     ./hardware/lemur.nix
     ./modules/cli.nix
     ./modules/fonts.nix
+    ./modules/games.nix
     ./modules/kde.nix
   ];
 
