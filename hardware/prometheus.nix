@@ -8,16 +8,32 @@
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
-  boot.initrd.availableKernelModules = [ "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "usb_storage" "usbhid" ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot = {
+    loader.grub = {
+      enable = true;
+      version = 2;
+      device = "/dev/disk/by-id/ata-VB0250EAVER_Z3TR4KJF";
+    };
+
+    initrd.availableKernelModules = [ "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "usb_storage" "usbhid" ];
+    kernelModules = [ "kvm-amd" ];
+    blacklistedKernelModules = [ "dvb_usb_rtl28xxu" "rtl2832" ];
+    extraModulePackages = [ ];
+  };
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/c96b5569-bf84-46d9-a939-c9d5f866a28e";
       fsType = "ext4";
     };
 
+  nix.maxJobs = 2;
+
   swapDevices = [ ];
 
-  nix.maxJobs = 2;
+  services.udev = {
+      extraRules = ''
+# https://github.com/keenerd/rtl-sdr/blob/master/rtl-sdr.rules
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2832", MODE:="0666"
+'';
+  };
 }
