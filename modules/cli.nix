@@ -9,6 +9,7 @@
     curl
     fdupes
     file
+    fswatch
     git
     gnumake
     hdparm

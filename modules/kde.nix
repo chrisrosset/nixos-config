@@ -8,6 +8,7 @@
     krita
     okular
     qbittorrent
+    simplescreenrecorder
     spectacle
     xclip
   ];

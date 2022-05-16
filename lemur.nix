@@ -23,6 +23,10 @@ in
     aspellDicts.en-computers
     avahi
     calibre
+    chromium
+    dbeaver
+    direnv
+    docker-compose
     ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
       forge
       plantuml-mode
@@ -31,9 +35,13 @@ in
     firefox
     ghidra-bin
     graphviz-nox
+    libreoffice-fresh
     libvterm-neovim
     keepassxc
+    kitty
+    nix-direnv
     plantuml
+    signal-desktop
     sqlite
     vlc
   ];
@@ -42,6 +50,10 @@ in
     hostName = "lemur";
     extraHosts = wireguardCfg.extraHosts;
     wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
+  };
+
+  programs = {
+    zsh.enable = true;
   };
 
   # Enable the X11 windowing system.
@@ -107,9 +119,14 @@ in
     uid = 1000;
     group = "users";
     home = "/home/ctr";
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "docker" "wheel" "networkmanager" "vboxusers" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+  };
+
+  virtualisation = {
+    docker.enable = true;
+    virtualbox.host.enable = true;
   };
 
   system.stateVersion = "20.09"; # change with care
