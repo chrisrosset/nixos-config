@@ -91,22 +91,20 @@ in
       dataDir = "/home/ctr/syncthing";
       configDir = "/home/ctr/.config/syncthing";
 
-      declarative = {
-        overrideDevices = true;
-        devices = syncthingCfg.devices;
-        overrideFolders = true;
-        folders = {
-          "/home/ctr/syncthing/default" = {
-            id = "sync-default";
-            label = "Default";
-            devices = syncthingCfg.groups.standard;
-          };
+      overrideDevices = true;
+      devices = syncthingCfg.devices;
+      overrideFolders = true;
+      folders = {
+        "/home/ctr/syncthing/default" = {
+          id = "sync-default";
+          label = "Default";
+          devices = syncthingCfg.groups.standard;
+        };
 
-          "/home/ctr/syncthing/Calibre" = {
-            id = "sync-calibre";
-            label = "Calibre";
-            devices = syncthingCfg.groups.pcs;
-          };
+        "/home/ctr/syncthing/Calibre" = {
+          id = "sync-calibre";
+          label = "Calibre";
+          devices = syncthingCfg.groups.pcs;
         };
       };
     };
