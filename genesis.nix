@@ -10,12 +10,12 @@ in
     ];
 
   boot.cleanTmpDir = true;
-  boot.kernelPackages = pkgs.linuxPackages_5_6;
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;
   };
 
-  environment.systemPackages = with pkgs; [];
+  environment.systemPackages = with pkgs; [
+  ];
 
   networking.hostName = "genesis";
   networking.firewall = {
@@ -48,9 +48,52 @@ in
     };
   };
 
+  security.acme = {
+    acceptTerms = true;
+    email = "chris@rosset.org.uk";
+  };
+
   services = {
     fail2ban = {
+    nginx = {
       enable = true;
+      user = "http";
+      virtualHosts = {
+
+        "aleksandra.rosset.pl" = {
+          serverAliases = [ "www.aleksandra.rosset.pl" ];
+          locations."/" = {
+            return = "301 http://aleksandrarosset.myportfolio.com";
+          };
+        };
+
+        "ewa.rosset.pl" = {
+          serverAliases = [ "www.ewa.rosset.pl" ];
+          locations."/" = {
+            root = "/var/www/ewa.rosset.pl";
+          };
+        };
+
+        "rosset.tech" = {
+          forceSSL = true;
+          enableACME = true;
+          serverAliases = [ "www.rosset.tech" ];
+          locations."/" = {
+            root = "/var/www/rosset.tech";
+          };
+        };
+
+        "hass.rosset.tech" = {
+          forceSSL = true;
+          enableACME = true;
+          serverAliases = [ "www.hass.rosset.tech" ];
+          locations."/" = {
+            proxyPass = "http://192.168.200.10:8123";
+            proxyWebsockets = true;
+          };
+        };
+
+      };
     };
 
     openssh = {
@@ -70,6 +113,10 @@ in
     home = "/home/ctr";
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+  };
+
+  users.users.http = {
+    isSystemUser = true;
   };
 
   time.timeZone = "UTC";
