@@ -1,5 +1,8 @@
 { config, pkgs, ... }:
 let
+  postgresqlDomain = "rosset.tech";
+  postgresqlCertDir = config.security.acme.certs."${postgresqlDomain}".directory;
+  postgresqlCredsDir = "/var/run/credentials/postgresql.service";
   wireguardCfg = import ./modules/wireguard.nix;
 in
 {
@@ -51,6 +54,9 @@ in
   security.acme = {
     acceptTerms = true;
     email = "chris@rosset.org.uk";
+    certs."${postgresqlDomain}".postRun = ''
+      systemctl restart postgresql
+    '';
   };
 
   services = {
@@ -103,10 +109,38 @@ in
       enable = true;
       permitRootLogin = "no";
     };
+
+    postgresql = {
+      enable = true;
+      enableTCPIP = true;
+      authentication = ''
+        local all all              peer
+        hostssl  all all 0.0.0.0/0    scram-sha-256
+        hostssl  all all ::0/0        scram-sha-256
+      '';
+      settings = {
+        password_encryption = "scram-sha-256";
+        ssl = true;
+        ssl_cert_file = "${postgresqlCredsDir}/fullchain.pem";
+        ssl_key_file = "${postgresqlCredsDir}/key.pem";
+      };
+    };
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "19.09";
+  system.stateVersion = "21.11";
+
+  systemd.services = {
+    postgresql = {
+      requires = [
+        "acme-finished-${postgresqlDomain}.target"
+      ];
+      serviceConfig.LoadCredential = [
+        "fullchain.pem:${postgresqlCertDir}/fullchain.pem"
+        "key.pem:${postgresqlCertDir}/key.pem"
+      ];
+    };
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ctr = {
