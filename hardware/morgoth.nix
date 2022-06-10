@@ -8,24 +8,23 @@
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/4b8b0e48-f7bf-4ba1-8131-364fa8db6473";
-      fsType = "btrfs";
+    { device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S21HNXAG451663B-part2";
+      fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/3568d324-fd4f-43fe-8014-59f5fe1405cc";
-      fsType = "ext4";
+    { device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S21HNXAG451663B-part1";
+      fsType = "vfat";
     };
 
-  fileSystems."/mnt/dropbox" =
-    { device = "/dev/disk/by-uuid/abb4c490-0673-4af9-a262-2b1cb15ca0be";
-      fsType = "ext4";
-    };
 
   swapDevices = [ ];
 
