@@ -13,6 +13,7 @@
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
+  boot.blacklistedKernelModules = [ "dvb_usb_rtl28xxu" "rtl2832" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
@@ -25,9 +26,17 @@
       fsType = "vfat";
     };
 
+  hardware.bluetooth.enable = true;
 
   swapDevices = [ ];
 
   nix.maxJobs = lib.mkDefault 16;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+
+  services.udev = {
+      extraRules = ''
+# https://github.com/keenerd/rtl-sdr/blob/master/rtl-sdr.rules
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2832", MODE:="0666"
+'';
+  };
 }
