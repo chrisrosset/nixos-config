@@ -8,6 +8,7 @@ let
   keepassWithPlugins = pkgs.keepass.override {
     plugins = [ pkgs.keepass-keepasshttp ];
   };
+  wireguardCfg = import ./modules/wireguard.nix;
 in
 {
   imports = [
@@ -65,9 +66,12 @@ in
     allowUnfree = false;
   };
 
-  networking.firewall.enable = false;
-  networking.hostName = "morgoth"; # Define your hostname.
-  networking.wireless.enable = false;
+  networking = rec {
+    firewall.enable = false;
+    hostName = "morgoth";
+    extraHosts = wireguardCfg.extraHosts;
+    wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
+  };
 
   services.openssh.enable = true;
 
