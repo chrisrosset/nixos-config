@@ -16,15 +16,22 @@
   boot.blacklistedKernelModules = [ "dvb_usb_rtl28xxu" "rtl2832" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S21HNXAG451663B-part2";
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S21HNXAG451663B-part2";
       fsType = "ext4";
     };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S21HNXAG451663B-part1";
+    "/boot" = {
+      device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S21HNXAG451663B-part1";
       fsType = "vfat";
     };
+
+    "/srv/raid" = {
+      label = "data";
+      fsType = "ext4";
+    };
+  };
 
   hardware.bluetooth.enable = true;
 
