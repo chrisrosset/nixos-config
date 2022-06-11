@@ -23,6 +23,8 @@
       fsType = "vfat";
     };
 
+  hardware.bluetooth.enable = true;
+
   hardware.opengl = {
     enable = true;
     driSupport = true;
