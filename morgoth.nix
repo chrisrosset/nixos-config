@@ -1,5 +1,6 @@
 { config, pkgs, ... }:
 let
+  syncthingCfg = import ./modules/syncthing.nix;
   wireguardCfg = import ./modules/wireguard.nix;
 in
 {
@@ -30,17 +31,36 @@ in
     wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
   };
 
-  services.openssh.enable = true;
+  services = {
+    openssh.enable = true;
 
-  services.syncthing = {
-    enable = true;
-    systemService = true;
-    user = "ctr";
-    group = "users";
-    dataDir = "/home/ctr/Sync";
+    syncthing = {
+      enable = true;
+      systemService = true;
+      openDefaultPorts = true;
+      user = "ctr";
+      group = "users";
+      dataDir = "/home/ctr/syncthing";
+      configDir = "/home/ctr/.config/syncthing";
+      guiAddress = "0.0.0.0:8384";
 
-    # New in 19.03
-    # configDir = "/home/ctr/.config/syncthing";
+      overrideDevices = true;
+      devices = syncthingCfg.devices;
+      overrideFolders = true;
+      folders = {
+        "/home/ctr/syncthing/default" = {
+          id = "sync-default";
+          label = "Default";
+          devices = syncthingCfg.groups.standard;
+        };
+
+        "/home/ctr/syncthing/Calibre" = {
+          id = "sync-calibre";
+          label = "Calibre";
+          devices = syncthingCfg.groups.pcs;
+        };
+      };
+    };
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
