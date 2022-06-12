@@ -27,7 +27,6 @@ in
     calibre
     chromium
     dbeaver
-    direnv
     docker-compose
     ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
       forge

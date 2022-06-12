@@ -7,6 +7,7 @@
     bat
     coreutils
     curl
+    direnv
     fdupes
     file
     fswatch
