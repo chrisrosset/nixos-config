@@ -8,13 +8,14 @@
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.blacklistedKernelModules = [ "dvb_usb_rtl28xxu" "rtl2832" ];
-  boot.extraModulePackages = [ ];
+  boot = {
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+    initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" ];
+    kernelModules = [ "kvm-intel" ];
+    blacklistedKernelModules = [ "dvb_usb_rtl28xxu" "rtl2832" "rtl2838" ];
+    extraModulePackages = [ ];
+  };
 
   fileSystems = {
     "/" = {
@@ -41,9 +42,12 @@
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   services.udev = {
-      extraRules = ''
+    extraRules = ''
 # https://github.com/keenerd/rtl-sdr/blob/master/rtl-sdr.rules
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2832", MODE:="0666"
+# Mode 0666 allows global read/write to avoid running rtl_433 as root.
+# Access could be group-restricted with 0666 but this isn't a multi-user system.
+# Symlink allows for having a stable device name in /dev.
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2838", MODE:="0666", SYMLINK+="rtl2838"
 '';
   };
 }
