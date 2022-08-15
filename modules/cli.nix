@@ -3,7 +3,6 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    ag
     bat
     coreutils
     curl
@@ -33,6 +32,7 @@
     qrencode
     ripgrep
     rsync
+    silver-searcher
     smartmontools
     sshfs
     strace
