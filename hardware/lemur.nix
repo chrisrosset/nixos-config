@@ -32,8 +32,7 @@
   };
   hardware.enableRedistributableFirmware = true;
 
-  # No lemp10 support as of 21.05
-  hardware.system76.enableAll = false;
+  hardware.system76.enableAll = true;
 
   swapDevices = [{ device = "/dev/disk/by-uuid/6a5e0c75-0b2f-4f2b-a31b-910ed2857782"; }];
 

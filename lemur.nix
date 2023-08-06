@@ -28,7 +28,7 @@ in
     chromium
     dbeaver
     docker-compose
-    ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
+    ((emacsPackagesFor emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
       forge
       plantuml-mode
       vterm
@@ -36,13 +36,18 @@ in
     firefox
     ghidra-bin
     graphviz-nox
+    guile_3_0
+    guile-json
+    guile-gcrypt
     libreoffice-fresh
     libvterm-neovim
     keepassxc
     kitty
     nix-direnv
+    nodePackages.mermaid-cli
     plantuml
     signal-desktop
+    sbcl
     sqlite
     vlc
   ];
@@ -62,20 +67,23 @@ in
     enable = true;
 
     # Enable the Plasma 5 Desktop Environment.
-    displayManager.sddm.enable = true;
+    displayManager.sddm = {
+      enable = true;
+      settings.Wayland.SessionDir = "${pkgs.plasma5Packages.plasma-workspace}/share/wayland-sessions";
+    };
     desktopManager.plasma5.enable = true;
 
     layout = "us";
     libinput = {
       enable = true;
       touchpad = {
-        naturalScrolling = true;
         disableWhileTyping = false;
+        naturalScrolling = true;
+        tapping = true;
       };
     };
 
     videoDrivers = [ "modesetting" ];
-    useGlamor = true;
   };
 
   services = {
@@ -110,7 +118,9 @@ in
       };
     };
 
-    tlp.enable = true;
+    # https://discourse.nixos.org/t/cant-enable-tlp-when-upgrading-to-21-05/13435/7
+    # services.power-profiles-daemon.enable = true;
+    #tlp.enable = true;
   };
 
   users.users.ctr = {
@@ -125,7 +135,7 @@ in
 
   virtualisation = {
     docker.enable = true;
-    virtualbox.host.enable = true;
+    # virtualbox.host.enable = true;
   };
 
   system.stateVersion = "20.09"; # change with care
