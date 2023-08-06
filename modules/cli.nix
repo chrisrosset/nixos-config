@@ -14,6 +14,7 @@
     gnumake
     hdparm
     htop
+    inotify-tools
     iotop
     iperf
     iperf3
