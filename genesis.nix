@@ -12,7 +12,7 @@ in
       ./modules/cli.nix
     ];
 
-  boot.cleanTmpDir = true;
+  boot.tmp.cleanOnBoot = true;
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;
   };
@@ -21,6 +21,7 @@ in
   ];
 
   networking.hostName = "genesis";
+  networking.extraHosts = wireguardCfg.extraHosts;
   networking.firewall = {
     enable = false;
     allowPing = true;
@@ -51,9 +52,13 @@ in
     };
   };
 
+  programs.fish.enable = true;
+
   security.acme = {
     acceptTerms = true;
-    email = "chris@rosset.org.uk";
+    defaults = {
+      email = "chris@rosset.org.uk";
+    };
     certs."${postgresqlDomain}".postRun = ''
       systemctl restart postgresql
     '';
@@ -107,7 +112,7 @@ in
 
     openssh = {
       enable = true;
-      permitRootLogin = "no";
+      settings.PermitRootLogin = "no";
     };
 
     postgresql = {
@@ -150,10 +155,13 @@ in
     home = "/home/ctr";
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+    shell = pkgs.fish;
   };
 
   users.users.http = {
     isSystemUser = true;
+    group = "nogroup";
+    extraGroups = [ "acme" ];
   };
 
   time.timeZone = "UTC";
