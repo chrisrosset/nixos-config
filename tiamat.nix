@@ -25,6 +25,8 @@ in
     wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
   };
 
+  programs.fish.enable = true;
+
   security.sudo.enable = true;
 
   services = {
@@ -43,7 +45,7 @@ in
 
     openssh = {
       enable = true;
-      permitRootLogin = "no";
+      settings.PermitRootLogin = "no";
     };
 
     ntp.enable = true;
@@ -65,6 +67,8 @@ guest account = ctr
   writable = yes
 '';
     };
+
+    tailscale.enable = true;
 
     transmission = {
       enable = true;
