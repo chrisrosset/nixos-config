@@ -35,19 +35,11 @@
   };
 
   hardware.bluetooth.enable = true;
+  hardware.rtl-sdr.enable = true;
 
   swapDevices = [ ];
 
   nix.maxJobs = lib.mkDefault 16;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
-  services.udev = {
-    extraRules = ''
-# https://github.com/keenerd/rtl-sdr/blob/master/rtl-sdr.rules
-# Mode 0666 allows global read/write to avoid running rtl_433 as root.
-# Access could be group-restricted with 0666 but this isn't a multi-user system.
-# Symlink allows for having a stable device name in /dev.
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2838", MODE:="0666", SYMLINK+="rtl2838"
-'';
-  };
 }
