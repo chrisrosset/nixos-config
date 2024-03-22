@@ -62,6 +62,15 @@ in
     certs."${postgresqlDomain}".postRun = ''
       systemctl restart postgresql
     '';
+
+    # https://carjorvaz.com/posts/setting-up-wildcard-lets-encrypt-certificates-on-nixos/
+    certs."rosset.org.uk" = {
+      domain = "rosset.org.uk";
+      extraDomainNames = [ "*.rosset.org.uk" ];
+      dnsProvider = "ovh";
+      dnsPropagationCheck = true;
+      credentialsFile = "/root/ovh-creds-rosset.org.uk.txt";
+    };
   };
 
   services = {
