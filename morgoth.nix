@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 let
   syncthingCfg = import ./modules/syncthing.nix;
-  wireguardCfg = import ./modules/wireguard.nix;
 in
 {
   imports = [
@@ -27,8 +26,6 @@ in
   networking = rec {
     firewall.enable = false;
     hostName = "morgoth";
-    extraHosts = wireguardCfg.extraHosts;
-    wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
   };
 
   programs = {

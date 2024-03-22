@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 let
   # syncthingCfg = import ./modules/syncthing.nix;
-  wireguardCfg = import ./modules/wireguard.nix;
   transmissionPath = "/srv/raid/export/transmission";
 in
 {
@@ -21,8 +20,6 @@ in
   networking = rec {
     firewall.enable = false;
     hostName = "tiamat";
-    extraHosts = wireguardCfg.extraHosts;
-    wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
   };
 
   programs.fish.enable = true;

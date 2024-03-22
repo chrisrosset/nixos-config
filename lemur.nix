@@ -2,7 +2,6 @@
 
 let
   syncthingCfg = import ./modules/syncthing.nix;
-  wireguardCfg = import ./modules/wireguard.nix;
 in
 {
   imports = [
@@ -54,8 +53,6 @@ in
 
   networking = rec {
     hostName = "lemur";
-    extraHosts = wireguardCfg.extraHosts;
-    wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
   };
 
   programs = {
