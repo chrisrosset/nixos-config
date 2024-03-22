@@ -111,7 +111,7 @@ in
           enableACME = true;
           serverAliases = [ "www.hass.rosset.tech" ];
           locations."/" = {
-            proxyPass = "http://192.168.200.10:8123";
+            proxyPass = "http://morgoth:8123";
             proxyWebsockets = true;
           };
         };
@@ -138,6 +138,16 @@ in
         ssl_cert_file = "${postgresqlCredsDir}/fullchain.pem";
         ssl_key_file = "${postgresqlCredsDir}/key.pem";
       };
+    };
+
+    tailscale = {
+      authKeyFile = "/root/tailscale.key";
+      enable = true;
+      extraUpFlags = [
+        "advertise-exit-node"
+        "--ssh"
+      ];
+      openFirewall = true;
     };
   };
 
