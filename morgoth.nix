@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   syncthingCfg = import ./modules/syncthing.nix;
   wireguardCfg = import ./modules/wireguard.nix;
@@ -29,6 +29,10 @@ in
     hostName = "morgoth";
     extraHosts = wireguardCfg.extraHosts;
     wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
+  };
+
+  programs = {
+    fish.enable = true;
   };
 
   services = {
@@ -87,26 +91,65 @@ guest account = nobody
       guiAddress = "0.0.0.0:8384";
 
       overrideDevices = true;
-      devices = syncthingCfg.devices;
       overrideFolders = true;
-      folders = {
-        "/home/ctr/syncthing/default" = {
-          id = "sync-default";
-          label = "Default";
-          devices = syncthingCfg.groups.standard;
-        };
+      settings = {
+        devices = syncthingCfg.devices;
+        folders = {
+          "/home/ctr/syncthing/default" = {
+            id = "sync-default";
+            label = "Default";
+            devices = syncthingCfg.groups.standard;
+          };
 
-        "/home/ctr/syncthing/Calibre" = {
-          id = "sync-calibre";
-          label = "Calibre";
-          devices = syncthingCfg.groups.pcs;
+          "/home/ctr/syncthing/opo-photos" = {
+            id = "cph2551_fhbe-photos";
+            label = "OnePlus Open Photos";
+            devices = syncthingCfg.groups.standard;
+          };
+
+          "/home/ctr/syncthing/a71-photos" = {
+            id = "sm-a715f_ntzx-photos";
+            label = "A71 Photos";
+            devices = [ "morgoth" "s71a" ];
+          };
+
+          "/home/ctr/syncthing/Calibre" = {
+            id = "sync-calibre";
+            label = "Calibre";
+            devices = syncthingCfg.groups.pcs;
+          };
         };
       };
+    };
+
+    tailscale = {
+      authKeyFile = "/root/tailscale.key";
+      enable = true;
+      openFirewall = true;
+    };
+
+    udev = {
+      enable = true;
+      extraRules = ''
+      # After the occasional USB disconnect/reconnect from the Zigbee adapter,
+      # automatically restart `zigbee2mqtt`.
+      SUBSYSTEM=="usb", ATTRS{idProduct}=="ea60", ATTRS{idVendor}=="10c4", ACTION=="bind", RUN+="${pkgs.docker}/bin/docker restart zigbee2mqtt"
+    '';
     };
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "21.11";
+
+  systemd.services."tune-usb-autosuspend" = {
+      description = "Disable USB autosuspend";
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = { Type = "oneshot"; };
+      unitConfig.RequiresMountsFor = "/sys";
+      script = ''
+        echo -1 > /sys/module/usbcore/parameters/autosuspend
+      '';
+    }; 
 
   time.timeZone = "America/New_York";
 
@@ -114,7 +157,7 @@ guest account = nobody
   users.extraUsers.ctr = {
     isNormalUser = true;
     group = "users";
-    extraGroups = [ "wheel" "docker" "dialout" ];
+    extraGroups = [ "dialout" "docker" "wheel" ];
     createHome = true;
     home = "/home/ctr";
     uid = 1000;
@@ -122,6 +165,5 @@ guest account = nobody
     openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
   };
 
-  virtualisation.virtualbox.host.enable = true;
   virtualisation.docker.enable = true;
 }
