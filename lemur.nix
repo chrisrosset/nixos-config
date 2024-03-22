@@ -120,6 +120,11 @@ in
       };
     };
 
+    tailscale = {
+      enable = true;
+      port = 56788;
+    };
+
     # https://discourse.nixos.org/t/cant-enable-tlp-when-upgrading-to-21-05/13435/7
     # services.power-profiles-daemon.enable = true;
     #tlp.enable = true;
