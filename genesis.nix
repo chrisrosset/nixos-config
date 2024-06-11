@@ -3,7 +3,6 @@ let
   postgresqlDomain = "rosset.tech";
   postgresqlCertDir = config.security.acme.certs."${postgresqlDomain}".directory;
   postgresqlCredsDir = "/var/run/credentials/postgresql.service";
-  wireguardCfg = import ./modules/wireguard.nix;
 in
 {
   imports = [
@@ -21,35 +20,16 @@ in
   ];
 
   networking.hostName = "genesis";
-  networking.extraHosts = wireguardCfg.extraHosts;
   networking.firewall = {
     enable = false;
     allowPing = true;
-    allowedTCPPorts = [ 22 80 443 wireguardCfg.serverPort ];
+    allowedTCPPorts = [ 22 80 443 ];
   };
 
   networking.nat = {
     enable = true;
     externalInterface = "eth0";
     internalInterfaces = [ "wg0" ];
-  };
-
-  networking.wireguard.interfaces = {
-    wg0 = {
-      ips = [ "192.168.200.1/24" ];
-      listenPort = wireguardCfg.serverPort;
-      privateKeyFile = "/root/wireguard/genesis.key";
-
-      postSetup = ''
-        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 192.168.200.0/24 -o eth0 -j MASQUERADE
-      '';
-
-      postShutdown = ''
-        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 192.168.200.0/24 -o eth0 -j MASQUERADE
-      '';
-
-      peers = wireguardCfg.getServerPeers "/root/wireguard";
-    };
   };
 
   programs.fish.enable = true;
