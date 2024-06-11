@@ -20,7 +20,7 @@
           { address="fe80::f816:3eff:fe2b:279"; prefixLength=64; }
         ];
         ipv4.routes = [ { address = "172.16.254.254"; prefixLength = 32; } ];
-        ipv6.routes = [ { address = ""; prefixLength = 32; } ];
+        #ipv6.routes = [ { address = ""; prefixLength = 32; } ];
       };
 
     };
