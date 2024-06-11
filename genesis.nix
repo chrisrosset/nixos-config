@@ -72,6 +72,15 @@ in
           };
         };
 
+        "rosset.org.uk" = {
+          forceSSL = true;
+          useACMEHost = "rosset.org.uk";
+          serverAliases = [ "www.rosset.org.uk" ];
+          locations."/" = {
+            root = "/var/www/rosset.org.uk";
+          };
+        };
+
         "rosset.tech" = {
           forceSSL = true;
           enableACME = true;
