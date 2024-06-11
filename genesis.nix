@@ -121,7 +121,10 @@ in
 
     openssh = {
       enable = true;
-      settings.PermitRootLogin = "no";
+      settings = {
+        PasswordAuthentication = false;
+        PermitRootLogin = "no";
+      };
     };
 
     postgresql = {
