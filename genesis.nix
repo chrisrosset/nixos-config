@@ -26,12 +26,6 @@ in
     allowedTCPPorts = [ 22 80 443 ];
   };
 
-  networking.nat = {
-    enable = true;
-    externalInterface = "eth0";
-    internalInterfaces = [ "wg0" ];
-  };
-
   programs.fish.enable = true;
 
   security.acme = {
@@ -127,7 +121,7 @@ in
       authKeyFile = "/root/tailscale.key";
       enable = true;
       extraUpFlags = [
-        "advertise-exit-node"
+        "--advertise-exit-node"
         "--ssh"
       ];
       openFirewall = true;
