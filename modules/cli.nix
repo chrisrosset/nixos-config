@@ -46,6 +46,6 @@
     w3m
     wget
     which
-    youtube-dl
+    yt-dlp
   ];
 }
