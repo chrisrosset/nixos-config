@@ -12,7 +12,6 @@
   boot = {
     loader.grub = {
       enable = true;
-      version = 2;
       device = "/dev/sda";
     };
 
@@ -30,11 +29,6 @@
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/fc0f4bd7-7cfa-4e1b-84b9-05963a7bc281";
       fsType = "ext2";
-    };
-
-  fileSystems."/srv/raid" =
-    { device = "/dev/disk/by-uuid/43490db9-0f6d-4f6d-b490-33184ce2c859";
-      fsType = "ext4";
     };
 
   swapDevices = [ ];

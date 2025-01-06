@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 let
-  # syncthingCfg = import ./modules/syncthing.nix;
-  wireguardCfg = import ./modules/wireguard.nix;
+  syncthingCfg = import ./modules/syncthing.nix;
 in
 {
   imports =
@@ -17,35 +16,6 @@ in
       zsh
   ];
 
-  # fileSystems = {
-  #   # RAID Array
-  #   "/mnt/raid" = {
-  #     label = "data";
-  #     fsType = "ext4";
-  #   };
-
-  #   # Network binds
-  #   "/exports/movies" = {
-  #     device = "/mnt/raid/movies";
-  #     options = [ "bind" ];
-  #   };
-
-  #   "/exports/photos" = {
-  #     device = "/mnt/raid/photos";
-  #     options = [ "bind" ];
-  #   };
-
-  #   "/exports/random" = {
-  #     device = "/mnt/raid/random";
-  #     options = [ "bind" ];
-  #   };
-
-  #   "/exports/series" = {
-  #     device = "/mnt/raid/series";
-  #     options = [ "bind" ];
-  #   };
-  # };
-
   # Select internationalisation properties.
   # i18n = {
   #   consoleFont = "lat9w-16";
@@ -56,16 +26,16 @@ in
   networking = rec {
     firewall.enable = false;
     hostName = "kraken";
-    extraHosts = wireguardCfg.extraHosts;
-    wireguard.interfaces = {wg0 = wireguardCfg.getConfig hostName;};
   };
+
+  programs.fish.enable = true;
 
   security.sudo.enable = true;
 
   services = {
     avahi = {
       enable = true;
-      nssmdns = true;
+      nssmdns4 = true;
       publish = {
         enable = true;
         userServices = true;
@@ -78,75 +48,50 @@ in
 
     openssh = {
       enable = true;
-      permitRootLogin = "yes";
+      settings.PermitRootLogin = "no";
     };
 
     ntp.enable = true;
 
-    # TODO: remove before committing
-    rsyncd = {
+    syncthing = {
       enable = true;
+      systemService = true;
+      openDefaultPorts = true;
+      user = "ctr";
+      group = "users";
+      dataDir = "/home/ctr/syncthing";
+      configDir = "/home/ctr/.config/syncthing";
+      key = "/root/syncthing/key.pem";
+      cert = "/root/syncthing/cert.pem";
+      overrideDevices = true;
+      overrideFolders = true;
       settings = {
-        export = {
-          path = "/srv/raid/export";
-          "dont compress" = "*";
+        devices = syncthingCfg.devices;
+        folders = {
+          "/home/ctr/syncthing/default" = {
+            id = "sync-default";
+            label = "Default";
+            devices = syncthingCfg.groups.standard;
+          };
+
+          "/home/ctr/syncthing/Calibre" = {
+            id = "sync-calibre";
+            label = "Calibre";
+            devices = syncthingCfg.groups.pcs;
+          };
         };
       };
     };
 
-    samba = {
-      enable   = true;
-      nsswins  = true;
-      extraConfig = ''
-workgroup = WORKGROUP
-server string = Home server
-security = user
-map to guest = Bad User
-guest account = nobody
-
-[export]
-  path = /srv/raid/export
-  public = yes
-  only guest = yes
-  writable = yes
-'';
+    tailscale = {
+      authKeyFile = "/root/tailscale.key";
+      enable = true;
+      extraUpFlags = [ "--advertise-exit-node" "--ssh" ];
+      useRoutingFeatures = "both";
     };
-
-  #   syncthing = {
-  #     enable = true;
-  #     openDefaultPorts = true;
-  #     user = "ctr";
-  #     dataDir = "/mnt/raid/syncthing/";
-  #     configDir = "/home/ctr/.config/syncthing";
-
-  #     declarative = {
-  #       overrideDevices = true;
-  #       devices = syncthingCfg.devices;
-
-  #       overrideFolders = true;
-  #       folders = {
-  #         "/mnt/raid/syncthing/default" = {
-  #           id = "sync-default";
-  #           label = "Default";
-  #           devices = syncthingCfg.groups.standard;
-  #         };
-
-  #         "/mnt/raid/syncthing/Calibre" = {
-  #           id = "sync-calibre";
-  #           label = "Calibre";
-  #           devices = syncthingCfg.groups.pcs;
-  #         };
-
-  #         "/mnt/raid/syncthing/s71-photos" = {
-  #           id = "sm-a715f_ntzx-photos";
-  #           label = "S71 Photos";
-  #           devices = [ "s71a" ];
-  #           type = "receiveonly";
-  #         };
-  #       };
-  #     };
-  #   };
   };
+
+  systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true";
 
   time.timeZone = "UTC";
 
