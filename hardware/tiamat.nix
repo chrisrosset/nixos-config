@@ -11,7 +11,7 @@
   boot = {
     loader.grub = {
       enable = true;
-      device = "/dev/sde";
+      device = "/dev/disk/by-id/usb-VendorCo_ProductCode_8111731064968323914-0:0";
     };
 
     initrd.availableKernelModules = [ "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "nvme" "usb_storage" "usbhid" "sd_mod" ];
@@ -34,9 +34,10 @@
       fsType = "ext4";
     };
   fileSystems."/srv/raid" =
-    { device = "/dev/disk/by-uuid/646a45b0-d912-4317-a737-21ab70b0e4ec";
+    { device = "/dev/disk/by-uuid/fba34ee4-2390-4d2b-919b-51b0c862ec0d";
       fsType = "ext4";
     };
+
 
   swapDevices = [ ];
 

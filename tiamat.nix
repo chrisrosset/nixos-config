@@ -29,7 +29,7 @@ in
   services = {
     avahi = {
       enable = true;
-      nssmdns = true;
+      nssmdns4 = true;
       publish = {
         enable = true;
         userServices = true;
@@ -48,9 +48,9 @@ in
     ntp.enable = true;
 
     samba = {
-      enable   = true;
+      enable   = false;
       nsswins  = true;
-      extraConfig = ''
+      settings = ''
 workgroup = WORKGROUP
 server string = Home server
 security = user
