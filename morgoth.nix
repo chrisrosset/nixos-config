@@ -138,6 +138,7 @@ guest account = nobody
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "21.11";
 
+  # https://www.zigbee2mqtt.io/guide/faq/#zigbee2mqtt-crashes-after-some-time
   systemd.services."tune-usb-autosuspend" = {
       description = "Disable USB autosuspend";
       wantedBy = [ "multi-user.target" ];

@@ -30,6 +30,8 @@ in
     peers = [ server ];
   });
 
+  server = server;
+
   serverPort = port;
 
   getServerPeers = (keypath:

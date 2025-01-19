@@ -13,8 +13,6 @@
     xclip
   ];
 
-  hardware.pulseaudio.enable = true;
-
   networking.networkmanager.enable = true;
 
   services.xserver = {

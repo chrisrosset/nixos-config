@@ -25,9 +25,8 @@
 
   hardware.bluetooth.enable = true;
 
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
     extraPackages = with pkgs; [ intel-media-driver ];
   };
   hardware.enableRedistributableFirmware = true;

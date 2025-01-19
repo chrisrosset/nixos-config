@@ -25,7 +25,7 @@ in
     avahi
     calibre
     chromium
-    dbeaver
+    dbeaver-bin
     docker-compose
     ((emacsPackagesFor emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
       forge
@@ -59,18 +59,16 @@ in
     zsh.enable = true;
   };
 
-  # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
+  services = {
+    acpid.enable = true;
 
-    # Enable the Plasma 5 Desktop Environment.
     displayManager.sddm = {
       enable = true;
       settings.Wayland.SessionDir = "${pkgs.plasma5Packages.plasma-workspace}/share/wayland-sessions";
     };
-    desktopManager.plasma5.enable = true;
 
-    layout = "us";
+    fstrim.enable = true;
+
     libinput = {
       enable = true;
       touchpad = {
@@ -80,12 +78,6 @@ in
       };
     };
 
-    videoDrivers = [ "modesetting" ];
-  };
-
-  services = {
-    acpid.enable = true;
-    fstrim.enable = true;
     openssh.enable = true;
 
     syncthing = {
@@ -125,6 +117,14 @@ in
     # https://discourse.nixos.org/t/cant-enable-tlp-when-upgrading-to-21-05/13435/7
     # services.power-profiles-daemon.enable = true;
     #tlp.enable = true;
+
+    xserver = {
+      enable = true;
+
+      desktopManager.plasma5.enable = true;
+
+      videoDrivers = [ "modesetting" ];
+    };
   };
 
   users.users.ctr = {

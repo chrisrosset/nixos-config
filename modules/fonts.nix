@@ -4,7 +4,7 @@
   fonts = {
     fontDir.enable = true;
     enableGhostscriptFonts = true;
-    fonts = with pkgs; [
+    packages = with pkgs; [
       dejavu_fonts
       inconsolata
       fira-code
