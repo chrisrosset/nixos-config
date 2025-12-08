@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; with pkgs.plasma5Packages.kdeApplications; [
+  environment.systemPackages = with pkgs; with pkgs.kdePackages; [
     ark
     gwenview
     kdialog
@@ -10,16 +10,20 @@
     qbittorrent
     simplescreenrecorder
     spectacle
+    trayscale
     xclip
   ];
 
   networking.networkmanager.enable = true;
 
-  services.xserver = {
-    enable = true;
+  services = {
+    desktopManager.plasma6.enable = true;
 
-    desktopManager = {
-      plasma5.enable = true;
+    displayManager.sddm = {
+      enable = true;
+      wayland.enable = true;
     };
+
+    xserver.enable = true;
   };
 }

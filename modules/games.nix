@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    brogue
+    brogue-ce
     crawl
     gzdoom
     nethack

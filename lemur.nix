@@ -22,17 +22,18 @@ in
     aspell
     aspellDicts.en
     aspellDicts.en-computers
+    aspellDicts.pl
     avahi
     calibre
     chromium
     dbeaver-bin
     docker-compose
-    ((emacsPackagesFor emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
-      forge
-      plantuml-mode
+    ((emacsPackagesFor emacs30).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
+      emacsql
       vterm
     ]))
     firefox
+    gcc
     ghidra-bin
     graphviz-nox
     guile_3_0
@@ -53,6 +54,7 @@ in
 
   networking = rec {
     hostName = "lemur";
+    firewall.enable = false;
   };
 
   programs = {
@@ -61,11 +63,6 @@ in
 
   services = {
     acpid.enable = true;
-
-    displayManager.sddm = {
-      enable = true;
-      settings.Wayland.SessionDir = "${pkgs.plasma5Packages.plasma-workspace}/share/wayland-sessions";
-    };
 
     fstrim.enable = true;
 
@@ -119,10 +116,7 @@ in
     #tlp.enable = true;
 
     xserver = {
-      enable = true;
-
-      desktopManager.plasma5.enable = true;
-
+      # Desktop manager enabled in kde.nix
       videoDrivers = [ "modesetting" ];
     };
   };

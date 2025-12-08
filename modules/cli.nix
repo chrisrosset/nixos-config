@@ -20,7 +20,6 @@
     iperf3
     jq
     killall
-    loc
     mosh
     ms-sys
     ncdu
@@ -38,6 +37,7 @@
     sshfs
     strace
     tcpdump
+    tokei
     tmux
     tree
     unar
