@@ -8,6 +8,7 @@ in
     [
       ./hardware/tiamat.nix
       ./modules/cli.nix
+      ./modules/zabbix.nix
     ];
 
   environment.systemPackages = with pkgs; [

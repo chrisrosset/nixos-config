@@ -7,6 +7,7 @@ in
     [
       ./hardware/kraken.nix
       ./modules/cli.nix
+      ./modules/zabbix.nix
     ];
 
   environment.systemPackages = with pkgs; [
