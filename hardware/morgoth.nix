@@ -34,9 +34,7 @@
     };
   };
 
-  hardware.bluetooth.enable = true;
   hardware.enableRedistributableFirmware = true;
-  hardware.rtl-sdr.enable = true;
 
   swapDevices = [ ];
 

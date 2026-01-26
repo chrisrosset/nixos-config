@@ -125,29 +125,10 @@ guest account = nobody
       openFirewall = true;
     };
 
-    udev = {
-      enable = true;
-      extraRules = ''
-      # After the occasional USB disconnect/reconnect from the Zigbee adapter,
-      # automatically restart `zigbee2mqtt`.
-      SUBSYSTEM=="usb", ATTRS{idProduct}=="ea60", ATTRS{idVendor}=="10c4", ACTION=="bind", RUN+="${pkgs.docker}/bin/docker restart zigbee2mqtt"
-    '';
-    };
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "21.11";
-
-  # https://www.zigbee2mqtt.io/guide/faq/#zigbee2mqtt-crashes-after-some-time
-  systemd.services."tune-usb-autosuspend" = {
-      description = "Disable USB autosuspend";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = { Type = "oneshot"; };
-      unitConfig.RequiresMountsFor = "/sys";
-      script = ''
-        echo -1 > /sys/module/usbcore/parameters/autosuspend
-      '';
-    }; 
 
   time.timeZone = "America/New_York";
 
