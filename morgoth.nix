@@ -1,5 +1,28 @@
 { config, pkgs, lib, ... }:
 let
+
+  ports = {
+    homeassistant = 8123;
+    syncthing = 8384;
+    zigbee2mqtt = 8080;
+  };
+
+  domain = "rosset.pl";
+  subdomain = "home";
+
+  mkVirtualHost = svc: port: {
+    name = "${svc}.${subdomain}.${domain}";
+    value = {
+      forceSSL = true;
+      useACMEHost = domain;
+      serverAliases = [ "www.${svc}.${subdomain}.${domain}" ];
+      locations."/" = {
+        proxyPass = "http://localhost:${toString port}";
+        proxyWebsockets = true;
+      };
+    };
+  };
+
   syncthingCfg = import ./modules/syncthing.nix;
 in
 {
@@ -36,7 +59,74 @@ in
     fish.enable = true;
   };
 
+  # This is (mostly) copy/pasted from `genesis.nix`. Consider unifying into a module.
+  security.acme = {
+    acceptTerms = true;
+    defaults = {
+      email = "chris@rosset.org.uk";
+    };
+
+    certs."${domain}" = {
+      domain = domain;
+      extraDomainNames = [ "*.${subdomain}.${domain}" ];
+      dnsProvider = "ovh";
+      dnsPropagationCheck = true;
+      credentialsFile = "/root/ovh-credentials.txt";
+    };
+
+    # https://carjorvaz.com/posts/setting-up-wildcard-lets-encrypt-certificates-on-nixos/
+    certs."rosset.org.uk" = {
+      domain = "rosset.org.uk";
+      extraDomainNames = [ "*.rosset.org.uk" "*.home.rosset.org.uk" ];
+      dnsProvider = "ovh";
+      dnsPropagationCheck = true;
+      credentialsFile = "/root/ovh-creds-rosset.org.uk.txt";
+    };
+  };
+
   services = {
+
+    nginx = {
+      enable = true;
+      user = "http";
+
+      virtualHosts = builtins.listToAttrs (map (x: mkVirtualHost x.svc x.port) [
+        { svc = "ha"; port = ports.homeassistant; }
+        { svc = "z2m"; port = ports.zigbee2mqtt; }
+      ]) // {
+
+        # Useful for testing certificates.
+        "test.home.rosset.pl" = {
+          forceSSL = true;
+          useACMEHost = "rosset.pl";
+          serverAliases = [ "www.test.home.rosset.pl" ];
+          locations."/" = {
+            return = "200 '<html><body>It works</body></html>'";
+            extraConfig = ''
+              default_type text/html;
+            '';
+          };
+        };
+
+        # "fake" .lan domains
+        "home-assistant-host.lan" = {
+          serverAliases = [ "www.home-assistant-host.lan" ];
+          locations."/" = {
+            proxyPass = "http://localhost:${toString ports.homeassistant}";
+            proxyWebsockets = true;
+          };
+        };
+
+        "zigbee2mqtt-host.lan" = {
+          serverAliases = [ "www.zigbee2mqtt-host.lan" ];
+          locations."/" = {
+            proxyPass = "http://localhost:${toString ports.zigbee2mqtt}";
+            proxyWebsockets = true;
+          };
+        };
+      };
+    };
+
     openssh.enable = true;
 
     samba = {
@@ -96,7 +186,7 @@ in
       group = "users";
       dataDir = "/home/ctr/syncthing";
       configDir = "/home/ctr/.config/syncthing";
-      guiAddress = "0.0.0.0:8384";
+      guiAddress = "0.0.0.0:${toString ports.syncthing}";
 
       overrideDevices = true;
       overrideFolders = true;
@@ -153,6 +243,12 @@ in
     uid = 1000;
     shell = pkgs.fish;
     openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+  };
+
+  users.users.http = {
+    isSystemUser = true;
+    group = "nogroup";
+    extraGroups = [ "acme" ];
   };
 
   virtualisation.docker.enable = true;
