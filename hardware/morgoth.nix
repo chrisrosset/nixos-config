@@ -25,6 +25,7 @@
         "net.ipv6.conf.all.forwarding" = true;
       };
     };
+    swraid.enable = true;
   };
 
   fileSystems = {
@@ -38,6 +39,7 @@
     "/srv/raid" = {
       device = "/dev/disk/by-uuid/43490db9-0f6d-4f6d-b490-33184ce2c859";
       fsType = "ext4";
+      options = ["nofail"];
     };
   };
 
