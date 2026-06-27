@@ -7,5 +7,9 @@
     enable = true;
     openFirewall = true;
     server = "morgoth";
+    settings = {
+      HostMetadataItem = [ "system.uname" ];
+      ServerActive = "morgoth";
+    };
   };
 }

@@ -4,6 +4,7 @@ let
   ports = {
     homeassistant = 8123;
     syncthing = 8384;
+    zabbix = 8081;
     zigbee2mqtt = 8080;
   };
 
@@ -93,6 +94,7 @@ in
       virtualHosts = builtins.listToAttrs (map (x: mkVirtualHost x.svc x.port) [
         { svc = "ha"; port = ports.homeassistant; }
         { svc = "z2m"; port = ports.zigbee2mqtt; }
+        { svc = "zabbix"; port = ports.zabbix; }
       ]) // {
 
         # Useful for testing certificates.
@@ -226,10 +228,28 @@ in
       openFirewall = true;
     };
 
+    zabbixAgent = {
+      enable = true;
+      server = "localhost";
+    };
+    zabbixServer.enable = true;
+    zabbixWeb = {
+      enable = true;
+      frontend = "nginx";
+      nginx.virtualHost = {
+        # Override the default (80) to avoid clashing with the common nginx
+        # instance used as a reverse proxy.
+        listen = [{port = ports.zabbix; addr = "0.0.0.0";}];
+      };
+    };
   };
 
+  # Use PHP 8.3 for Zabbix.
+  # https://github.com/NixOS/nixpkgs/issues/417572
+  services.phpfpm.pools.zabbix.phpPackage = pkgs.php83;
+
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "21.11";
+  system.stateVersion = "25.11";
 
   time.timeZone = "America/New_York";
 
