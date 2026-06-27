@@ -9,8 +9,14 @@ in
     ];
 
   environment.systemPackages = with pkgs; [
+    (aspellWithDicts (dicts: with dicts; [
+      en
+      en-computers
+      pl
+    ]))
     docker
     docker-compose
+    emacs
     mosquitto
     p7zip
     syncthing
