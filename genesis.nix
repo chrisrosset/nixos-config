@@ -41,9 +41,6 @@
   };
 
   services = {
-    fail2ban = {
-      #enable = true;
-    };
 
     nginx = {
       enable = true;
@@ -70,25 +67,6 @@
           serverAliases = [ "www.rosset.org.uk" ];
           locations."/" = {
             root = "/var/www/rosset.org.uk";
-          };
-        };
-
-        "rosset.tech" = {
-          forceSSL = true;
-          enableACME = true;
-          serverAliases = [ "www.rosset.tech" ];
-          locations."/" = {
-            root = "/var/www/rosset.tech";
-          };
-        };
-
-        "hass.rosset.tech" = {
-          forceSSL = true;
-          enableACME = true;
-          serverAliases = [ "www.hass.rosset.tech" ];
-          locations."/" = {
-            proxyPass = "http://morgoth:8123";
-            proxyWebsockets = true;
           };
         };
 
