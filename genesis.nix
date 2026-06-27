@@ -1,9 +1,4 @@
 { config, pkgs, ... }:
-let
-  postgresqlDomain = "rosset.tech";
-  postgresqlCertDir = config.security.acme.certs."${postgresqlDomain}".directory;
-  postgresqlCredsDir = "/var/run/credentials/postgresql.service";
-in
 {
   imports = [
       ./genesis/hardware-configuration.nix
@@ -34,9 +29,6 @@ in
     defaults = {
       email = "chris@rosset.org.uk";
     };
-    certs."${postgresqlDomain}".postRun = ''
-      systemctl restart postgresql
-    '';
 
     # https://carjorvaz.com/posts/setting-up-wildcard-lets-encrypt-certificates-on-nixos/
     certs."rosset.org.uk" = {
@@ -111,22 +103,6 @@ in
       };
     };
 
-    postgresql = {
-      enable = true;
-      enableTCPIP = true;
-      authentication = ''
-        local all all              peer
-        hostssl  all all 0.0.0.0/0    scram-sha-256
-        hostssl  all all ::0/0        scram-sha-256
-      '';
-      settings = {
-        password_encryption = "scram-sha-256";
-        ssl = true;
-        ssl_cert_file = "${postgresqlCredsDir}/fullchain.pem";
-        ssl_key_file = "${postgresqlCredsDir}/key.pem";
-      };
-    };
-
     tailscale = {
       authKeyFile = "/root/tailscale.key";
       enable = true;
@@ -139,19 +115,7 @@ in
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "21.11";
-
-  systemd.services = {
-    postgresql = {
-      requires = [
-        "acme-finished-${postgresqlDomain}.target"
-      ];
-      serviceConfig.LoadCredential = [
-        "fullchain.pem:${postgresqlCertDir}/fullchain.pem"
-        "key.pem:${postgresqlCertDir}/key.pem"
-      ];
-    };
-  };
+  system.stateVersion = "25.11";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ctr = {
