@@ -38,6 +38,13 @@
       dnsPropagationCheck = true;
       environmentFile = "/root/ovh-credentials.txt";
     };
+
+    certs."rosset.pl" = {
+      domain = "rosset.pl";
+      extraDomainNames = [ "*.rosset.pl" "*.home.rosset.pl" ];
+      dnsProvider = "ovh";
+      dnsPropagationCheck = true;
+      environmentFile = "/root/ovh-credentials.txt";
     };
   };
 
@@ -58,7 +65,7 @@
         "ewa.rosset.pl" = {
           serverAliases = [ "www.ewa.rosset.pl" ];
           locations."/" = {
-            root = "/var/www/ewa.rosset.pl";
+            return = "301 https://www.linkedin.com/in/ewa-rosset-6a838a82/";
           };
         };
 
@@ -68,6 +75,16 @@
           serverAliases = [ "www.rosset.org.uk" ];
           locations."/" = {
             root = "/var/www/rosset.org.uk";
+          };
+        };
+
+        "ha.home.rosset.pl" = {
+          forceSSL = true;
+          useACMEHost = "rosset.pl";
+          serverAliases = [ "www.ha.home.rosset.pl" ];
+          locations."/" = {
+              proxyPass = "http://morgoth:8123";
+              proxyWebsockets = true;
           };
         };
 
