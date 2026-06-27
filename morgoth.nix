@@ -17,8 +17,6 @@ in
     zsh
   ];
 
-  hardware.pulseaudio.enable = true;
-
   nixpkgs.config = {
     allowUnfree = false;
   };
