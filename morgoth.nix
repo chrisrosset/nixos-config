@@ -42,43 +42,50 @@ in
     samba = {
       enable   = true;
       nsswins  = true;
-      extraConfig = ''
-workgroup = WORKGROUP
-server string = Home server
-security = user
-map to guest = Bad User
-guest account = nobody
+      settings = {
+        global = {
+          "workgroup" = "WORKGROUP";
+          "server string" = "Home server";
+          "security" = "user";
+          "map to guest" = "Bad User";
+          "guest account" = "nobody";
+        };
 
-[movies]
-  path = /srv/raid/movies
-  public = yes
-  only guest = yes
-  writable = yes
+        "movies" = {
+          "path" = "/srv/raid/movies";
+          "public" = "yes";
+          "only guest" = "yes";
+          "writable" = "yes";
+        };
 
-[photos]
-  path = /srv/raid/photos
-  public = yes
-  only guest = yes
-  writable = yes
+        "photos" = {
+          "path" = "/srv/raid/photos";
+          "public" = "yes";
+          "only guest" = "yes";
+          "writable" = "yes";
+        };
 
-[photos-kraken]
-  path = /srv/raid/photos-kraken
-  public = yes
-  only guest = yes
-  writable = no
+        "photos-kraken" = {
+          "path" = "/srv/raid/photos-kraken";
+          "public" = "yes";
+          "only guest" = "yes";
+          "writable" = "yes";
+        };
 
-[random]
-  path = /srv/raid/random
-  public = yes
-  only guest = yes
-  writable = yes
+        "random" = {
+          "path" = "/srv/raid/random";
+          "public" = "yes";
+          "only guest" = "yes";
+          "writable" = "yes";
+        };
 
-[series]
-  path = /srv/raid/series
-  public = yes
-  only guest = yes
-  writable = yes
-'';
+        "series" = {
+          "path" = "/srv/raid/series";
+          "public" = "yes";
+          "only guest" = "yes";
+          "writable" = "yes";
+        };
+      };
     };
 
     syncthing = {
