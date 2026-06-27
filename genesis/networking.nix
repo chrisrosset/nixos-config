@@ -8,7 +8,7 @@
       "8.8.4.4"
     ];
     defaultGateway = "172.16.254.254";
-    defaultGateway6 = "";
+    #defaultGateway6 = "fe80::1";
     dhcpcd.enable = false;
     usePredictableInterfaceNames = lib.mkForce true;
     interfaces = {
@@ -16,9 +16,9 @@
         ipv4.addresses = [
           { address="172.16.9.189"; prefixLength=16; }
         ];
-        ipv6.addresses = [
-          { address="fe80::f816:3eff:fe2b:279"; prefixLength=64; }
-        ];
+        #ipv6.addresses = [
+        #  { address="fe80::f816:3eff:fe2b:279"; prefixLength=64; }
+        #];
         ipv4.routes = [ { address = "172.16.254.254"; prefixLength = 32; } ];
         #ipv6.routes = [ { address = ""; prefixLength = 32; } ];
       };

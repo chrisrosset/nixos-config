@@ -36,7 +36,8 @@
       extraDomainNames = [ "*.rosset.org.uk" ];
       dnsProvider = "ovh";
       dnsPropagationCheck = true;
-      credentialsFile = "/root/ovh-creds-rosset.org.uk.txt";
+      environmentFile = "/root/ovh-credentials.txt";
+    };
     };
   };
 
