@@ -23,18 +23,14 @@
     loader.efi.canTouchEfiVariables = true;
   };
 
-  networking.hostName = "ecolite";
-
-  networking.networkmanager.enable = true;
-
-  users.users.ctr = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
-  };
-
   environment.systemPackages = with pkgs; [
+    docker
   ];
+
+  networking = {
+    hostName = "ecolite";
+    networkmanager.enable = true;
+  };
 
   services = {
     openssh.enable = true;
@@ -63,5 +59,13 @@
   system.stateVersion = "26.05"; # Did you read the comment?
 
   time.timeZone = "America/New_York";
+
+  users.users.ctr = {
+    isNormalUser = true;
+    extraGroups = [ "docker" "wheel" ];
+    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+  };
+
+  virtualisation.docker.enable = true;
 }
 
