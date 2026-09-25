@@ -3,7 +3,23 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, ... }:
+let
+  domain = "rosset.pl";
+  subdomain = "home";
 
+  mkVirtualHost = svc: port: {
+    name = "${svc}.${subdomain}.${domain}";
+    value = {
+      forceSSL = true;
+      useACMEHost = domain;
+      serverAliases = [ "www.${svc}.${subdomain}.${domain}" ];
+      locations."/" = {
+        proxyPass = "http://localhost:${toString port}";
+        proxyWebsockets = true;
+      };
+    };
+  };
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -32,7 +48,46 @@
     networkmanager.enable = true;
   };
 
+  security.acme = {
+    acceptTerms = true;
+    defaults = {
+      email = "chris@rosset.org.uk";
+    };
+
+    certs."${domain}" = {
+      domain = domain;
+      dnsProvider = "ovh";
+      dnsPropagationCheck = true;
+      environmentFile = "/root/ovh-credentials.txt";
+      extraDomainNames = [ "*.${subdomain}.${domain}" ];
+    };
+  };
+
   services = {
+    nginx = {
+      enable = true;
+      user = "http";
+
+      virtualHosts = builtins.listToAttrs (map (x: mkVirtualHost x.svc x.port) [
+        # WAIT: port services over from morgoth when ready
+      ]) // {
+
+        # Useful for testing certificates.
+        "test.home.rosset.pl" = {
+          forceSSL = true;
+          useACMEHost = "rosset.pl";
+          serverAliases = [ "www.test.home.rosset.pl" ];
+          locations."/" = {
+            return = "200 '<html><body>It works</body></html>'";
+            extraConfig = ''
+              default_type text/html;
+            '';
+          };
+        };
+
+      };
+    };
+
     openssh.enable = true;
 
     tailscale = {
@@ -48,7 +103,7 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.enable = false;
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
@@ -60,12 +115,19 @@
 
   time.timeZone = "America/New_York";
 
-  users.users.ctr = {
-    isNormalUser = true;
-    extraGroups = [ "docker" "wheel" ];
-    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+  users.users = {
+    ctr = {
+      isNormalUser = true;
+      extraGroups = [ "docker" "wheel" ];
+      openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+    };
+
+    http = {
+      isSystemUser = true;
+      group = "nogroup";
+      extraGroups = [ "acme" ];
+    };
   };
 
   virtualisation.docker.enable = true;
 }
-
