@@ -50,6 +50,7 @@ in
 
   networking = {
     hostName = "ecolite";
+    firewall.enable = false;
     networkmanager.enable = true;
   };
 
@@ -126,16 +127,6 @@ in
       };
     };
   };
-
-  # Use PHP 8.3 for Zabbix.
-  # https://github.com/NixOS/nixpkgs/issues/417572
-  services.phpfpm.pools.zabbix.phpPackage = pkgs.php83;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  networking.firewall.enable = false;
 
   system.stateVersion = "26.05";
 
