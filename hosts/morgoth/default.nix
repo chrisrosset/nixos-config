@@ -31,6 +31,7 @@ in
       ../../modules/cli.nix
       ../../modules/nix.nix
       ../../modules/ssh.nix
+      ../../modules/users.nix
     ];
 
   environment.systemPackages = with pkgs; [
@@ -55,10 +56,6 @@ in
   networking = rec {
     firewall.enable = false;
     hostName = "morgoth";
-  };
-
-  programs = {
-    fish.enable = true;
   };
 
   # This is (mostly) copy/pasted from `genesis.nix`. Consider unifying into a module.
@@ -250,18 +247,6 @@ in
   system.stateVersion = "25.11";
 
   time.timeZone = "America/New_York";
-
-  #users.mutableUsers = false;
-  users.extraUsers.ctr = {
-    isNormalUser = true;
-    group = "users";
-    extraGroups = [ "dialout" "docker" "wheel" ];
-    createHome = true;
-    home = "/home/ctr";
-    uid = 1000;
-    shell = pkgs.fish;
-    openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
-  };
 
   users.users.http = {
     isSystemUser = true;

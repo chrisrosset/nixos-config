@@ -6,6 +6,7 @@
       ../../modules/cli.nix
       ../../modules/nix.nix
       ../../modules/ssh.nix
+      ../../modules/users.nix
     ];
 
   boot.tmp.cleanOnBoot = true;
@@ -23,8 +24,6 @@
     allowPing = true;
     allowedTCPPorts = [ 22 80 443 ];
   };
-
-  programs.fish.enable = true;
 
   security.acme = {
     acceptTerms = true;
@@ -105,17 +104,6 @@
   };
 
   system.stateVersion = "25.11";
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.ctr = {
-    isNormalUser = true;
-    group = "users";
-    uid = 1000;
-    home = "/home/ctr";
-    extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
-    shell = pkgs.fish;
-  };
 
   users.users.http = {
     isSystemUser = true;

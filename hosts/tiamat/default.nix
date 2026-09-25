@@ -10,6 +10,7 @@ in
       ../../modules/cli.nix
       ../../modules/nix.nix
       ../../modules/ssh.nix
+      ../../modules/users.nix
       ../../modules/zabbix.nix
     ];
 
@@ -24,10 +25,6 @@ in
     firewall.enable = false;
     hostName = "tiamat";
   };
-
-  programs.fish.enable = true;
-
-  security.sudo.enable = true;
 
   services = {
     avahi = {
@@ -83,19 +80,6 @@ guest account = ctr
   };
 
   time.timeZone = "UTC";
-
-  users.extraUsers = {
-    ctr = {
-      isNormalUser = true;
-      group = "users";
-      extraGroups = [ "wheel" "nogroup" "transmission" ];
-      uid = 1000;
-      shell = pkgs.fish;
-      openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
-    };
-
-    hass.isNormalUser = true;
-  };
 
   system.stateVersion = "22.11";
 }

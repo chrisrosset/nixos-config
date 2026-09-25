@@ -9,6 +9,7 @@ in
       ../../modules/cli.nix
       ../../modules/nix.nix
       ../../modules/ssh.nix
+      ../../modules/users.nix
       ../../modules/zabbix.nix
     ];
 
@@ -30,10 +31,6 @@ in
     firewall.enable = false;
     hostName = "kraken";
   };
-
-  programs.fish.enable = true;
-
-  security.sudo.enable = true;
 
   services = {
     avahi = {
@@ -92,19 +89,6 @@ in
   systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true";
 
   time.timeZone = "UTC";
-
-  users.extraUsers = {
-    ctr = {
-      isNormalUser = true;
-      group = "users";
-      extraGroups = [ "wheel" "nogroup" ];
-      uid = 1000;
-      shell = pkgs.fish;
-      openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
-    };
-
-    hass.isNormalUser = true;
-  };
 
   system.stateVersion = "22.11";
 }

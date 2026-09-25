@@ -35,6 +35,7 @@ in
       ../../modules/cli.nix
       ../../modules/nix.nix
       ../../modules/ssh.nix
+      ../../modules/users.nix
     ];
 
   boot = {
@@ -135,18 +136,10 @@ in
 
   time.timeZone = "America/New_York";
 
-  users.users = {
-    ctr = {
-      isNormalUser = true;
-      extraGroups = [ "docker" "wheel" ];
-      openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
-    };
-
-    http = {
-      isSystemUser = true;
-      group = "nogroup";
-      extraGroups = [ "acme" ];
-    };
+  users.users.http = {
+    isSystemUser = true;
+    group = "nogroup";
+    extraGroups = [ "acme" ];
   };
 
   virtualisation.docker.enable = true;

@@ -13,6 +13,7 @@ in
     ../../modules/kde.nix
     ../../modules/nix.nix
     ../../modules/ssh.nix
+    ../../modules/users.nix
   ];
 
   boot = {
@@ -122,15 +123,7 @@ in
     };
   };
 
-  users.users.ctr = {
-    isNormalUser = true;
-    uid = 1000;
-    group = "users";
-    home = "/home/ctr";
-    extraGroups = [ "docker" "wheel" "networkmanager" ];
-    shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
-  };
+  users.users.ctr.shell = pkgs.zsh;
 
   virtualisation = {
     docker.enable = true;
