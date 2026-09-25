@@ -7,6 +7,14 @@ let
   domain = "rosset.pl";
   subdomain = "home";
 
+  ports = {
+    homeassistant = 8123;
+    syncthing = 8384;
+    vaultwarden = 8006;
+    zabbix = 8081;
+    zigbee2mqtt = 8080;
+  };
+
   mkVirtualHost = svc: port: {
     name = "${svc}.${subdomain}.${domain}";
     value = {
@@ -82,6 +90,23 @@ in
             extraConfig = ''
               default_type text/html;
             '';
+          };
+        };
+
+        # "fake" .lan domains
+        "home-assistant-host.lan" = {
+          serverAliases = [ "www.home-assistant-host.lan" ];
+          locations."/" = {
+            proxyPass = "http://localhost:${toString ports.homeassistant}";
+            proxyWebsockets = true;
+          };
+        };
+
+        "zigbee2mqtt-host.lan" = {
+          serverAliases = [ "www.zigbee2mqtt-host.lan" ];
+          locations."/" = {
+            proxyPass = "http://localhost:${toString ports.zigbee2mqtt}";
+            proxyWebsockets = true;
           };
         };
 
