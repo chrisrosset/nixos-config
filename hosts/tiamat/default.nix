@@ -13,7 +13,6 @@ in
       ../../modules/ssh.nix
       ../../modules/tailscale.nix
       ../../modules/users.nix
-      ../../modules/zabbix.nix
     ];
 
   roles.server = true;

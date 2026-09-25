@@ -1,15 +1,15 @@
-{ config, pkgs, ... }:
+{ config, lib, ... }:
 
 # Requires Tailscale to be enabled and running.
 
-{
+lib.mkIf config.roles.server {
   services.zabbixAgent = {
     enable = true;
     openFirewall = true;
-    server = "morgoth";
+    server = "ecolite";
     settings = {
       HostMetadataItem = [ "system.uname" ];
-      ServerActive = "morgoth";
+      ServerActive = "ecolite";
     };
   };
 }
