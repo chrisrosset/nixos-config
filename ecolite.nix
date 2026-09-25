@@ -77,7 +77,8 @@ in
       user = "http";
 
       virtualHosts = builtins.listToAttrs (map (x: mkVirtualHost x.svc x.port) [
-        # WAIT: port services over from morgoth when ready
+        { svc = "ha"; port = ports.homeassistant; }
+        { svc = "z2m"; port = ports.zigbee2mqtt; }
       ]) // {
 
         # Useful for testing certificates.
