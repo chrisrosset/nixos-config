@@ -8,10 +8,9 @@
     krita
     okular
     qbittorrent
-    simplescreenrecorder
     spectacle
     trayscale
-    xclip
+    wl-clipboard
   ];
 
   networking.networkmanager.enable = true;
@@ -23,7 +22,5 @@
       enable = true;
       wayland.enable = true;
     };
-
-    xserver.enable = true;
   };
 }

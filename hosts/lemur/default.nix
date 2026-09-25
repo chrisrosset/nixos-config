@@ -14,7 +14,6 @@ in
   ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
@@ -44,18 +43,17 @@ in
     aspellDicts.en
     aspellDicts.en-computers
     aspellDicts.pl
-    avahi
     calibre
     chromium
-    docker-compose
-    ((emacsPackagesFor emacs30).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
+    ((emacsPackagesFor emacs).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
       emacsql
       vterm
     ]))
     firefox
     gcc
+    ghostty
     graphviz-nox
-    libreoffice-fresh
+    libreoffice
     libvterm-neovim
     keepassxc
     nix-direnv
@@ -65,7 +63,7 @@ in
     vlc
   ];
 
-  networking = rec {
+  networking = {
     hostName = "lemur";
     firewall.enable = false;
   };
@@ -75,20 +73,14 @@ in
   };
 
   services = {
-    acpid.enable = true;
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+    };
 
     fstrim.enable = true;
 
     hardware.bolt.enable = true;
-
-    libinput = {
-      enable = true;
-      touchpad = {
-        disableWhileTyping = false;
-        naturalScrolling = true;
-        tapping = true;
-      };
-    };
 
     openssh.enable = true;
 
@@ -125,12 +117,7 @@ in
 
     tailscale = {
       enable = true;
-      port = 56788;
-    };
-
-    xserver = {
-      # Desktop manager enabled in kde.nix
-      videoDrivers = [ "modesetting" ];
+      openFirewall = true;
     };
   };
 
@@ -139,14 +126,13 @@ in
     uid = 1000;
     group = "users";
     home = "/home/ctr";
-    extraGroups = [ "docker" "wheel" "networkmanager" "vboxusers" ];
+    extraGroups = [ "docker" "wheel" "networkmanager" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
   };
 
   virtualisation = {
     docker.enable = true;
-    # virtualbox.host.enable = true;
   };
 
   system.stateVersion = "20.09"; # change with care
