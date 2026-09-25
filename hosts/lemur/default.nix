@@ -12,6 +12,7 @@ in
     ../../modules/games.nix
     ../../modules/kde.nix
     ../../modules/nix.nix
+    ../../modules/ssh.nix
   ];
 
   boot = {
@@ -62,6 +63,7 @@ in
     sbcl
     sqlite
     vlc
+    yt-dlp
   ];
 
   networking = {
@@ -82,8 +84,6 @@ in
     fstrim.enable = true;
 
     hardware.bolt.enable = true;
-
-    openssh.enable = true;
 
     power-profiles-daemon.enable = true;
 
@@ -129,7 +129,7 @@ in
     home = "/home/ctr";
     extraGroups = [ "docker" "wheel" "networkmanager" ];
     shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
+    openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
   };
 
   virtualisation = {

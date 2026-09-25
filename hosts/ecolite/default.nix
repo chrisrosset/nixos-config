@@ -34,6 +34,7 @@ in
       ./hardware-configuration.nix
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/ssh.nix
     ];
 
   boot = {
@@ -115,8 +116,6 @@ in
       };
     };
 
-    openssh.enable = true;
-
     tailscale = {
       authKeyFile = "/root/tailscale.key";
       enable = true;
@@ -132,11 +131,6 @@ in
   # Or disable the firewall altogether.
   networking.firewall.enable = false;
 
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
-
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "26.05"; # Did you read the comment?
 
@@ -146,7 +140,7 @@ in
     ctr = {
       isNormalUser = true;
       extraGroups = [ "docker" "wheel" ];
-      openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
+      openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
     };
 
     http = {

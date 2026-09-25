@@ -30,6 +30,7 @@ in
       ./hardware-configuration.nix
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/ssh.nix
     ];
 
   environment.systemPackages = with pkgs; [
@@ -128,8 +129,6 @@ in
         };
       };
     };
-
-    openssh.enable = true;
 
     samba = {
       enable   = true;
@@ -262,7 +261,7 @@ in
     home = "/home/ctr";
     uid = 1000;
     shell = pkgs.fish;
-    openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
+    openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
   };
 
   users.users.http = {

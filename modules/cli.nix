@@ -45,6 +45,5 @@
     w3m
     wget
     which
-    yt-dlp
   ];
 }

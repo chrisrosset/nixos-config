@@ -5,6 +5,7 @@
       ./networking.nix # generated at runtime by nixos-infect
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/ssh.nix
     ];
 
   boot.tmp.cleanOnBoot = true;
@@ -92,14 +93,6 @@
       };
     };
 
-    openssh = {
-      enable = true;
-      settings = {
-        PasswordAuthentication = false;
-        PermitRootLogin = "no";
-      };
-    };
-
     tailscale = {
       authKeyFile = "/root/tailscale.key";
       enable = true;
@@ -121,7 +114,7 @@
     uid = 1000;
     home = "/home/ctr";
     extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
+    openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
     shell = pkgs.fish;
   };
 

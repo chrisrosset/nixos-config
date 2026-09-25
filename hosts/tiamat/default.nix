@@ -9,6 +9,7 @@ in
       ./hardware-configuration.nix
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/ssh.nix
       ../../modules/zabbix.nix
     ];
 
@@ -41,11 +42,6 @@ in
     };
 
     cron.enable = true;
-
-    openssh = {
-      enable = true;
-      settings.PermitRootLogin = "no";
-    };
 
     ntp.enable = true;
 
@@ -95,7 +91,7 @@ guest account = ctr
       extraGroups = [ "wheel" "nogroup" "transmission" ];
       uid = 1000;
       shell = pkgs.fish;
-      openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
+      openssh.authorizedKeys.keys = (import ../../data/ssh-keys.nix).personal;
     };
 
     hass.isNormalUser = true;
