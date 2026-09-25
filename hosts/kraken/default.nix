@@ -7,6 +7,7 @@ in
     [
       ./hardware-configuration.nix
       ../../modules/cli.nix
+      ../../modules/nix.nix
       ../../modules/zabbix.nix
     ];
 

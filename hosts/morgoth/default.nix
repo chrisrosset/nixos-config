@@ -29,6 +29,7 @@ in
   imports = [
       ./hardware-configuration.nix
       ../../modules/cli.nix
+      ../../modules/nix.nix
     ];
 
   environment.systemPackages = with pkgs; [

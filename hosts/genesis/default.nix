@@ -4,6 +4,7 @@
       ./hardware-configuration.nix
       ./networking.nix # generated at runtime by nixos-infect
       ../../modules/cli.nix
+      ../../modules/nix.nix
     ];
 
   boot.tmp.cleanOnBoot = true;

@@ -11,6 +11,7 @@ in
     ../../modules/fonts.nix
     ../../modules/games.nix
     ../../modules/kde.nix
+    ../../modules/nix.nix
   ];
 
   boot = {
