@@ -1,9 +1,9 @@
 { config, pkgs, ... }:
 {
   imports = [
-      ./genesis/hardware-configuration.nix
-      ./genesis/networking.nix # generated at runtime by nixos-infect
-      ./modules/cli.nix
+      ./hardware-configuration.nix
+      ./networking.nix # generated at runtime by nixos-infect
+      ../../modules/cli.nix
     ];
 
   boot.tmp.cleanOnBoot = true;
@@ -120,7 +120,7 @@
     uid = 1000;
     home = "/home/ctr";
     extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+    openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
     shell = pkgs.fish;
   };
 

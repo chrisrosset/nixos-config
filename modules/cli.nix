@@ -32,7 +32,6 @@
     qrencode
     ripgrep
     rsync
-    silver-searcher
     smartmontools
     sshfs
     strace

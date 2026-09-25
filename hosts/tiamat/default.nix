@@ -1,14 +1,14 @@
 { config, pkgs, ... }:
 let
-  # syncthingCfg = import ./modules/syncthing.nix;
+  # syncthingCfg = import ../../modules/syncthing.nix;
   transmissionPath = "/srv/raid/export/transmission";
 in
 {
   imports =
     [
-      ./hardware/tiamat.nix
-      ./modules/cli.nix
-      ./modules/zabbix.nix
+      ./hardware-configuration.nix
+      ../../modules/cli.nix
+      ../../modules/zabbix.nix
     ];
 
   environment.systemPackages = with pkgs; [
@@ -94,7 +94,7 @@ guest account = ctr
       extraGroups = [ "wheel" "nogroup" "transmission" ];
       uid = 1000;
       shell = pkgs.fish;
-      openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+      openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
     };
 
     hass.isNormalUser = true;

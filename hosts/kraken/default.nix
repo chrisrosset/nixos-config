@@ -1,13 +1,13 @@
 { config, pkgs, ... }:
 let
-  syncthingCfg = import ./modules/syncthing.nix;
+  syncthingCfg = import ../../modules/syncthing.nix;
 in
 {
   imports =
     [
-      ./hardware/kraken.nix
-      ./modules/cli.nix
-      ./modules/zabbix.nix
+      ./hardware-configuration.nix
+      ../../modules/cli.nix
+      ../../modules/zabbix.nix
     ];
 
   environment.systemPackages = with pkgs; [
@@ -103,7 +103,7 @@ in
       extraGroups = [ "wheel" "nogroup" ];
       uid = 1000;
       shell = pkgs.fish;
-      openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+      openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
     };
 
     hass.isNormalUser = true;

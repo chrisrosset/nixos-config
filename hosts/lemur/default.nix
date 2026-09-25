@@ -1,17 +1,38 @@
 { config, lib, pkgs, ... }:
 
 let
-  syncthingCfg = import ./modules/syncthing.nix;
+  syncthingCfg = import ../../modules/syncthing.nix;
 in
 {
   imports = [
-    ./hardware/filco-jp.nix
-    ./hardware/lemur.nix
-    ./modules/cli.nix
-    ./modules/fonts.nix
-    ./modules/games.nix
-    ./modules/kde.nix
+    ./hardware-configuration.nix
+    ../../modules/filco-jp.nix
+    ../../modules/cli.nix
+    ../../modules/fonts.nix
+    ../../modules/games.nix
+    ../../modules/kde.nix
   ];
+
+  boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+  };
+
+  hardware = {
+    bluetooth.enable = true;
+    enableRedistributableFirmware = true;
+    graphics = {
+      enable = true;
+      extraPackages = with pkgs; [ intel-media-driver ];
+    };
+    system76 = {
+      enableAll = true;
+      power-daemon.enable = false;
+    };
+  };
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
   ];
@@ -26,7 +47,6 @@ in
     avahi
     calibre
     chromium
-    dbeaver-bin
     docker-compose
     ((emacsPackagesFor emacs30).emacsWithPackages (epkgs: with epkgs.melpaPackages; [
       emacsql
@@ -34,19 +54,12 @@ in
     ]))
     firefox
     gcc
-    ghidra-bin
     graphviz-nox
-    guile_3_0
-    guile-json
-    guile-gcrypt
     libreoffice-fresh
     libvterm-neovim
     keepassxc
-    kitty
     nix-direnv
-    nodePackages.mermaid-cli
     plantuml
-    signal-desktop
     sbcl
     sqlite
     vlc
@@ -66,6 +79,8 @@ in
 
     fstrim.enable = true;
 
+    hardware.bolt.enable = true;
+
     libinput = {
       enable = true;
       touchpad = {
@@ -76,6 +91,8 @@ in
     };
 
     openssh.enable = true;
+
+    power-profiles-daemon.enable = true;
 
     syncthing = {
       enable = true;
@@ -111,10 +128,6 @@ in
       port = 56788;
     };
 
-    # https://discourse.nixos.org/t/cant-enable-tlp-when-upgrading-to-21-05/13435/7
-    # services.power-profiles-daemon.enable = true;
-    #tlp.enable = true;
-
     xserver = {
       # Desktop manager enabled in kde.nix
       videoDrivers = [ "modesetting" ];
@@ -128,7 +141,7 @@ in
     home = "/home/ctr";
     extraGroups = [ "docker" "wheel" "networkmanager" "vboxusers" ];
     shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+    openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
   };
 
   virtualisation = {

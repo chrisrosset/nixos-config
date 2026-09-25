@@ -1,6 +1,5 @@
 { config, pkgs, lib, ... }:
 let
-
   ports = {
     homeassistant = 8123;
     syncthing = 8384;
@@ -24,12 +23,12 @@ let
     };
   };
 
-  syncthingCfg = import ./modules/syncthing.nix;
+  syncthingCfg = import ../../modules/syncthing.nix;
 in
 {
   imports = [
-      ./hardware/morgoth.nix
-      ./modules/cli.nix
+      ./hardware-configuration.nix
+      ../../modules/cli.nix
     ];
 
   environment.systemPackages = with pkgs; [
@@ -262,7 +261,7 @@ in
     home = "/home/ctr";
     uid = 1000;
     shell = pkgs.fish;
-    openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+    openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
   };
 
   users.users.http = {

@@ -31,8 +31,8 @@ in
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware/ecolite.nix
-      ./modules/cli.nix
+      ./hardware-configuration.nix
+      ../../modules/cli.nix
     ];
 
   boot = {
@@ -145,7 +145,7 @@ in
     ctr = {
       isNormalUser = true;
       extraGroups = [ "docker" "wheel" ];
-      openssh.authorizedKeys.keys = (import ./modules/sshkeys.nix).personal;
+      openssh.authorizedKeys.keys = (import ../../modules/sshkeys.nix).personal;
     };
 
     http = {
