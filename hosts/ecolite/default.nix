@@ -34,25 +34,19 @@ in
       ./hardware-configuration.nix
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/roles.nix
       ../../modules/ssh.nix
+      ../../modules/tailscale.nix
       ../../modules/users.nix
     ];
 
+  roles.server = true;
+
   boot = {
-    kernel = {
-      sysctl = {
-        "net.ipv4.conf.all.forwarding" = true;
-        "net.ipv6.conf.all.forwarding" = true;
-      };
-    };
     kernelPackages = pkgs.linuxPackages_latest;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
   };
-
-  environment.systemPackages = with pkgs; [
-    docker
-  ];
 
   networking = {
     hostName = "ecolite";
@@ -117,13 +111,6 @@ in
       };
     };
 
-    tailscale = {
-      authKeyFile = "/root/tailscale.key";
-      enable = true;
-      extraSetFlags = [ "--ssh" ];
-      extraUpFlags = [ "--advertise-exit-node" ];
-      openFirewall = true;
-    };
   };
 
   # Open ports in the firewall.

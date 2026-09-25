@@ -9,10 +9,14 @@ in
       ./hardware-configuration.nix
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/roles.nix
       ../../modules/ssh.nix
+      ../../modules/tailscale.nix
       ../../modules/users.nix
       ../../modules/zabbix.nix
     ];
+
+  roles.server = true;
 
   environment.systemPackages = with pkgs; [
       cron
@@ -59,8 +63,6 @@ guest account = ctr
   writable = yes
 '';
     };
-
-    tailscale.enable = true;
 
     transmission = {
       enable = true;

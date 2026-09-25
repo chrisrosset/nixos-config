@@ -5,15 +5,15 @@
       ./networking.nix # generated at runtime by nixos-infect
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/roles.nix
       ../../modules/ssh.nix
+      ../../modules/tailscale.nix
       ../../modules/users.nix
     ];
 
+  roles.server = true;
+
   boot.tmp.cleanOnBoot = true;
-  boot.kernel.sysctl = {
-    "net.ipv4.ip_forward" = 1;
-    "net.ipv6.conf.all.forwarding" = 1;
-  };
 
   environment.systemPackages = with pkgs; [
   ];
@@ -92,15 +92,6 @@
       };
     };
 
-    tailscale = {
-      authKeyFile = "/root/tailscale.key";
-      enable = true;
-      extraUpFlags = [
-        "--advertise-exit-node"
-        "--ssh"
-      ];
-      openFirewall = true;
-    };
   };
 
   system.stateVersion = "25.11";

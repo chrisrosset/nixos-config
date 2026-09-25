@@ -30,9 +30,13 @@ in
       ./hardware-configuration.nix
       ../../modules/cli.nix
       ../../modules/nix.nix
+      ../../modules/roles.nix
       ../../modules/ssh.nix
+      ../../modules/tailscale.nix
       ../../modules/users.nix
     ];
+
+  roles.server = true;
 
   environment.systemPackages = with pkgs; [
     (aspellWithDicts (dicts: with dicts; [
@@ -40,8 +44,6 @@ in
       en-computers
       pl
     ]))
-    docker
-    docker-compose
     emacs
     mosquitto
     p7zip
@@ -216,12 +218,6 @@ in
           };
         };
       };
-    };
-
-    tailscale = {
-      authKeyFile = "/root/tailscale.key";
-      enable = true;
-      openFirewall = true;
     };
 
     zabbixAgent = {

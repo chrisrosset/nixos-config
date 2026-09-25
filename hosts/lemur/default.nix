@@ -12,7 +12,9 @@ in
     ../../modules/games.nix
     ../../modules/kde.nix
     ../../modules/nix.nix
+    ../../modules/roles.nix
     ../../modules/ssh.nix
+    ../../modules/tailscale.nix
     ../../modules/users.nix
   ];
 
@@ -117,10 +119,6 @@ in
       };
     };
 
-    tailscale = {
-      enable = true;
-      openFirewall = true;
-    };
   };
 
   users.users.ctr.shell = pkgs.zsh;

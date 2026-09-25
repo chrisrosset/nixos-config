@@ -18,11 +18,6 @@
     kernelModules = [ "kvm-amd" ];
     blacklistedKernelModules = [ ];
     extraModulePackages = [ ];
-
-    kernel.sysctl = {
-      "net.ipv4.ip_forward" = 1;
-      "net.ipv6.conf.all.forwarding" = 1;
-    };
   };
 
   fileSystems."/" =
