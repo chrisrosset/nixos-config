@@ -247,7 +247,6 @@ in
   # https://github.com/NixOS/nixpkgs/issues/417572
   services.phpfpm.pools.zabbix.phpPackage = pkgs.php83;
 
-  # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "25.11";
 
   time.timeZone = "America/New_York";

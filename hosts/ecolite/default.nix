@@ -131,8 +131,7 @@ in
   # Or disable the firewall altogether.
   networking.firewall.enable = false;
 
-  # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "26.05"; # Did you read the comment?
+  system.stateVersion = "26.05";
 
   time.timeZone = "America/New_York";
 

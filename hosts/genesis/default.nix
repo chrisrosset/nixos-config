@@ -104,7 +104,6 @@
     };
   };
 
-  # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "25.11";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
