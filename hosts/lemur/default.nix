@@ -6,16 +6,10 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/base.nix
     ../../modules/filco-jp.nix
-    ../../modules/cli.nix
-    ../../modules/fonts.nix
     ../../modules/games.nix
     ../../modules/kde.nix
-    ../../modules/nix.nix
-    ../../modules/roles.nix
-    ../../modules/ssh.nix
-    ../../modules/tailscale.nix
-    ../../modules/users.nix
   ];
 
   boot = {

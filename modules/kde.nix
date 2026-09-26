@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
 {
+  imports = [ ./fonts.nix ];
+
   environment.systemPackages = with pkgs; with pkgs.kdePackages; [
     ark
     gwenview

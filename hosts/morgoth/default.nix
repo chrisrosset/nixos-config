@@ -27,12 +27,7 @@ in
 {
   imports = [
       ./hardware-configuration.nix
-      ../../modules/cli.nix
-      ../../modules/nix.nix
-      ../../modules/roles.nix
-      ../../modules/ssh.nix
-      ../../modules/tailscale.nix
-      ../../modules/users.nix
+      ../../modules/base.nix
     ];
 
   roles.server = true;

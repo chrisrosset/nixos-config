@@ -3,12 +3,7 @@
   imports = [
       ./hardware-configuration.nix
       ./networking.nix # generated at runtime by nixos-infect
-      ../../modules/cli.nix
-      ../../modules/nix.nix
-      ../../modules/roles.nix
-      ../../modules/ssh.nix
-      ../../modules/tailscale.nix
-      ../../modules/users.nix
+      ../../modules/base.nix
     ];
 
   roles.server = true;
