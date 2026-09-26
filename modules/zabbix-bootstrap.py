@@ -1,6 +1,7 @@
 import json
 import os
 import secrets
+import socket
 import time
 import urllib.error
 import urllib.request
@@ -11,6 +12,8 @@ PASSWORD_FILE = "/root/zabbix-admin-password"
 ACTION_NAME = "Register Linux servers"
 GROUP_NAME = "Linux servers"
 TEMPLATE_NAME = "Linux by Zabbix agent active"
+SERVER_TEMPLATE_NAME = "Zabbix server health"
+LEGACY_SERVER_HOST = "Zabbix server"
 
 opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
@@ -119,14 +122,73 @@ def ensure_host_group(token):
     return result["groupids"][0]
 
 
-def get_template_id(token):
+def get_template_id(token, name):
     templates = api("template.get", {
         "output": ["templateid"],
-        "filter": {"host": [TEMPLATE_NAME]},
+        "filter": {"host": [name]},
     }, token)
     if not templates:
-        raise RuntimeError(f"Zabbix template not found: {TEMPLATE_NAME}")
+        raise RuntimeError(f"Zabbix template not found: {name}")
     return templates[0]["templateid"]
+
+
+def ensure_server_host(token, group_id, template_ids):
+    hostname = socket.gethostname()
+    hosts = api("host.get", {
+        "output": ["hostid", "host"],
+        "filter": {"host": [hostname, LEGACY_SERVER_HOST]},
+        "selectGroups": ["groupid"],
+        "selectParentTemplates": ["templateid"],
+    }, token)
+    server_host = next(
+        (host for host in hosts if host["host"] == hostname),
+        None,
+    )
+    legacy_host = next(
+        (host for host in hosts if host["host"] == LEGACY_SERVER_HOST),
+        None,
+    )
+
+    if server_host:
+        groups = {group["groupid"] for group in server_host["groups"]}
+        groups.add(group_id)
+        templates = {
+            template["templateid"]
+            for template in server_host["parentTemplates"]
+        }
+        templates.update(template_ids)
+        api("host.update", {
+            "hostid": server_host["hostid"],
+            "groups": [{"groupid": group} for group in sorted(groups)],
+            "templates": [
+                {"templateid": template}
+                for template in sorted(templates)
+            ],
+        }, token)
+    else:
+        if legacy_host:
+            api("host.delete", [legacy_host["hostid"]], token)
+            legacy_host = None
+        api("host.create", {
+            "host": hostname,
+            "name": hostname,
+            "groups": [{"groupid": group_id}],
+            "interfaces": [{
+                "type": 1,
+                "main": 1,
+                "useip": 1,
+                "ip": "127.0.0.1",
+                "dns": "",
+                "port": "10050",
+            }],
+            "templates": [
+                {"templateid": template}
+                for template in template_ids
+            ],
+        }, token)
+
+    if legacy_host:
+        api("host.delete", [legacy_host["hostid"]], token)
 
 
 def ensure_registration_action(token, group_id, template_id):
@@ -172,7 +234,13 @@ def main():
     password = read_or_create_password()
     token = authenticate(password)
     group_id = ensure_host_group(token)
-    template_id = get_template_id(token)
+    template_id = get_template_id(token, TEMPLATE_NAME)
+    server_template_id = get_template_id(token, SERVER_TEMPLATE_NAME)
+    ensure_server_host(
+        token,
+        group_id,
+        [template_id, server_template_id],
+    )
     ensure_registration_action(token, group_id, template_id)
     print("Zabbix auto-registration bootstrap complete")
 
