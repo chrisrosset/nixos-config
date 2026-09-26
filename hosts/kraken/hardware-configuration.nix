@@ -34,6 +34,7 @@
   fileSystems."/mnt/shuck" = {
     device = "/dev/disk/by-uuid/3C9835089834C1E6";
     fsType = "ntfs";
+    options = [ "nofail" ];
   };
 
   swapDevices = [ ];
