@@ -24,17 +24,18 @@ def api(method, params, token=None):
         "Content-Type": "application/json-rpc",
         "Host": API_HOST,
     }
+    payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1,
+    }
     if token:
-        headers["Authorization"] = f"Bearer {token}"
+        payload["auth"] = token
 
     request = urllib.request.Request(
         API_URL,
-        data=json.dumps({
-            "jsonrpc": "2.0",
-            "method": method,
-            "params": params,
-            "id": 1,
-        }).encode(),
+        data=json.dumps(payload).encode(),
         headers=headers,
     )
 
