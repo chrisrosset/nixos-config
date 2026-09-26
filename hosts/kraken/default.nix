@@ -12,7 +12,7 @@
   ];
 
   networking = rec {
-    firewall.enable = false;
+    firewall.enable = true;
     hostName = "kraken";
   };
 

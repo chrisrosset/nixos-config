@@ -13,11 +13,9 @@
   environment.systemPackages = with pkgs; [
   ];
 
-  networking.hostName = "genesis";
-  networking.firewall = {
-    enable = false;
-    allowPing = true;
-    allowedTCPPorts = [ 22 80 443 ];
+  networking = {
+    hostName = "genesis";
+    firewall.enable = true;
   };
 
   security.acme = {

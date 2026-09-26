@@ -18,6 +18,8 @@
     kernelModules = [ "kvm-amd" ];
     blacklistedKernelModules = [ ];
     extraModulePackages = [ ];
+
+    swraid.enable = true;
   };
 
   fileSystems."/" =

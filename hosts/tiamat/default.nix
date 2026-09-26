@@ -11,23 +11,12 @@ in
 
   roles.server = true;
 
-  environment.systemPackages = with pkgs; [
-      cron
-      fish
-      samba
-      zsh
-  ];
-
   networking = rec {
     firewall.enable = false;
     hostName = "tiamat";
   };
 
   services = {
-    cron.enable = true;
-
-    ntp.enable = true;
-
     syncthing = {
       enable = true;
       dataDir = "/srv/raid/export/syncthing";
@@ -38,6 +27,7 @@ in
     samba = {
       enable = true;
       nsswins = true;
+      openFirewall = true;
 
       settings = {
         global = {
