@@ -9,6 +9,8 @@
   roles.server = true;
 
   environment.systemPackages = with pkgs; [
+    # TODO: Migrate /mnt/shuck to the kernel ntfs3 driver, then remove ntfs3g.
+    ntfs3g
   ];
 
   networking = rec {
