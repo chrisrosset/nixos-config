@@ -79,7 +79,7 @@
           useACMEHost = "rosset.pl";
           serverAliases = [ "www.ha.home.rosset.pl" ];
           locations."/" = {
-              proxyPass = "http://morgoth:8123";
+              proxyPass = "http://ecolite:8123";
               proxyWebsockets = true;
           };
         };
