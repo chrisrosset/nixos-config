@@ -14,13 +14,6 @@ in
   environment.systemPackages = with pkgs; [
   ];
 
-  # Select internationalisation properties.
-  # i18n = {
-  #   consoleFont = "lat9w-16";
-  #   consoleKeyMap = "us";
-  #   defaultLocale = "en_US.UTF-8";
-  # };
-
   networking = rec {
     firewall.enable = false;
     hostName = "kraken";
@@ -37,10 +30,6 @@ in
         domain = true;
       };
     };
-
-    cron.enable = true;
-
-    ntp.enable = true;
 
     syncthing = {
       enable = true;
