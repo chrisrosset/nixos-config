@@ -14,6 +14,6 @@
     pcs = [ "ecolite" "kraken" "lemur" "morgoth" ];
     phones = [ "s71a" "open" ];
     standard = pcs ++ phones;
-    oneplusPhotos = [ "kraken" "lemur" "morgoth" ] ++ phones;
+    oneplusPhotos = [ "morgoth" "open" ];
   };
 }
