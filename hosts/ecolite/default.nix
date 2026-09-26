@@ -46,7 +46,6 @@ in
   networking = {
     hostName = "ecolite";
     firewall.enable = false;
-    networkmanager.enable = true;
   };
 
   security.acme = {
