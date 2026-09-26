@@ -24,7 +24,6 @@
     ms-sys
     ncdu
     nmap
-    ntfs3g
     parallel
     parted
     pv
