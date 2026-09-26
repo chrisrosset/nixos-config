@@ -1,26 +1,11 @@
 { config, pkgs, lib, ... }:
 let
   ports = {
-    homeassistant = 8123;
     syncthing = 8384;
-    zigbee2mqtt = 8080;
   };
 
   domain = "rosset.pl";
   subdomain = "home";
-
-  mkVirtualHost = svc: port: {
-    name = "${svc}.${subdomain}.${domain}";
-    value = {
-      forceSSL = true;
-      useACMEHost = domain;
-      serverAliases = [ "www.${svc}.${subdomain}.${domain}" ];
-      locations."/" = {
-        proxyPass = "http://localhost:${toString port}";
-        proxyWebsockets = true;
-      };
-    };
-  };
 
   syncthingCfg = import ../../modules/syncthing.nix;
 in
@@ -66,7 +51,7 @@ in
       extraDomainNames = [ "*.${subdomain}.${domain}" ];
       dnsProvider = "ovh";
       dnsPropagationCheck = true;
-      credentialsFile = "/root/ovh-credentials.txt";
+      environmentFile = "/root/ovh-credentials.txt";
     };
 
     # https://carjorvaz.com/posts/setting-up-wildcard-lets-encrypt-certificates-on-nixos/
@@ -75,7 +60,7 @@ in
       extraDomainNames = [ "*.rosset.org.uk" "*.home.rosset.org.uk" ];
       dnsProvider = "ovh";
       dnsPropagationCheck = true;
-      credentialsFile = "/root/ovh-creds-rosset.org.uk.txt";
+      environmentFile = "/root/ovh-creds-rosset.org.uk.txt";
     };
   };
 
@@ -85,11 +70,7 @@ in
       enable = true;
       user = "http";
 
-      virtualHosts = builtins.listToAttrs (map (x: mkVirtualHost x.svc x.port) [
-        { svc = "ha"; port = ports.homeassistant; }
-        { svc = "z2m"; port = ports.zigbee2mqtt; }
-      ]) // {
-
+      virtualHosts = {
         # Useful for testing certificates.
         "test.home.rosset.pl" = {
           forceSSL = true;
@@ -100,23 +81,6 @@ in
             extraConfig = ''
               default_type text/html;
             '';
-          };
-        };
-
-        # "fake" .lan domains
-        "home-assistant-host.lan" = {
-          serverAliases = [ "www.home-assistant-host.lan" ];
-          locations."/" = {
-            proxyPass = "http://localhost:${toString ports.homeassistant}";
-            proxyWebsockets = true;
-          };
-        };
-
-        "zigbee2mqtt-host.lan" = {
-          serverAliases = [ "www.zigbee2mqtt-host.lan" ];
-          locations."/" = {
-            proxyPass = "http://localhost:${toString ports.zigbee2mqtt}";
-            proxyWebsockets = true;
           };
         };
       };

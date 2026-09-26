@@ -17,7 +17,6 @@
     initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" ];
     kernelModules = [ "kvm-intel" ];
     extraModulePackages = [ ];
-    vesa = true;
 
     swraid.enable = true;
   };
