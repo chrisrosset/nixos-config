@@ -1,13 +1,7 @@
 { config, pkgs, lib, ... }:
 let
-  ports = {
-    syncthing = 8384;
-  };
-
   domain = "rosset.pl";
   subdomain = "home";
-
-  syncthingCfg = import ../../modules/syncthing.nix;
 in
 {
   imports = [
@@ -142,44 +136,6 @@ in
 
     syncthing = {
       enable = true;
-      systemService = true;
-      openDefaultPorts = true;
-      user = "ctr";
-      group = "users";
-      dataDir = "/home/ctr/syncthing";
-      configDir = "/home/ctr/.config/syncthing";
-      guiAddress = "0.0.0.0:${toString ports.syncthing}";
-
-      overrideDevices = true;
-      overrideFolders = true;
-      settings = {
-        devices = syncthingCfg.devices;
-        folders = {
-          "/home/ctr/syncthing/default" = {
-            id = "sync-default";
-            label = "Default";
-            devices = syncthingCfg.groups.standard;
-          };
-
-          "/home/ctr/syncthing/opo-photos" = {
-            id = "cph2551_fhbe-photos";
-            label = "OnePlus Open Photos";
-            devices = syncthingCfg.groups.standard;
-          };
-
-          "/home/ctr/syncthing/a71-photos" = {
-            id = "sm-a715f_ntzx-photos";
-            label = "A71 Photos";
-            devices = [ "morgoth" "s71a" ];
-          };
-
-          "/home/ctr/syncthing/Calibre" = {
-            id = "sync-calibre";
-            label = "Calibre";
-            devices = syncthingCfg.groups.pcs;
-          };
-        };
-      };
     };
 
   };

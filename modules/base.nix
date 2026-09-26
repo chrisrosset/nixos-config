@@ -6,6 +6,7 @@
     ./nix.nix
     ./roles.nix
     ./ssh.nix
+    ./syncthing.nix
     ./tailscale.nix
     ./users.nix
   ];

@@ -1,6 +1,5 @@
 { config, pkgs, ... }:
 let
-  syncthingCfg = import ../../modules/syncthing.nix;
   transmissionPath = "/srv/raid/export/transmission";
 in
 {
@@ -31,27 +30,9 @@ in
 
     syncthing = {
       enable = true;
-      systemService = true;
-      openDefaultPorts = true;
-      user = "ctr";
-      group = "users";
       dataDir = "/srv/raid/export/syncthing";
-      configDir = "/home/ctr/.config/syncthing";
-      guiAddress = "0.0.0.0:8384";
       key = "/root/syncthing/key.pem";
       cert = "/root/syncthing/cert.pem";
-      overrideDevices = true;
-      overrideFolders = true;
-      settings = {
-        devices = syncthingCfg.devices;
-        folders = {
-          "/srv/raid/export/syncthing/tidemill-sync" = {
-            id = "tidemill-sync";
-            label = "tidemill-sync";
-            devices = [ "tiamat" "tidemill" ];
-          };
-        };
-      };
     };
 
     samba = {

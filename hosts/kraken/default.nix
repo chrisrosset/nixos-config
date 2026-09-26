@@ -1,7 +1,4 @@
 { config, pkgs, ... }:
-let
-  syncthingCfg = import ../../modules/syncthing.nix;
-in
 {
   imports =
     [
@@ -22,37 +19,11 @@ in
   services = {
     syncthing = {
       enable = true;
-      systemService = true;
-      openDefaultPorts = true;
-      user = "ctr";
-      group = "users";
-      dataDir = "/home/ctr/syncthing";
-      configDir = "/home/ctr/.config/syncthing";
       key = "/root/syncthing/key.pem";
       cert = "/root/syncthing/cert.pem";
-      overrideDevices = true;
-      overrideFolders = true;
-      settings = {
-        devices = syncthingCfg.devices;
-        folders = {
-          "/home/ctr/syncthing/default" = {
-            id = "sync-default";
-            label = "Default";
-            devices = syncthingCfg.groups.standard;
-          };
-
-          "/home/ctr/syncthing/Calibre" = {
-            id = "sync-calibre";
-            label = "Calibre";
-            devices = syncthingCfg.groups.pcs;
-          };
-        };
-      };
     };
 
   };
-
-  systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true";
 
   time.timeZone = "UTC";
 

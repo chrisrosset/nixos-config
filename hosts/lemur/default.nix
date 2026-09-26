@@ -1,8 +1,4 @@
 { config, lib, pkgs, ... }:
-
-let
-  syncthingCfg = import ../../modules/syncthing.nix;
-in
 {
   imports = [
     ./hardware-configuration.nix
@@ -85,31 +81,6 @@ in
 
     syncthing = {
       enable = true;
-      systemService = true;
-      openDefaultPorts = true;
-      user = "ctr";
-      group = "users";
-      dataDir = "/home/ctr/syncthing";
-      configDir = "/home/ctr/.config/syncthing";
-
-      overrideDevices = true;
-      overrideFolders = true;
-      settings = {
-        devices = syncthingCfg.devices;
-        folders = {
-          "/home/ctr/syncthing/default" = {
-            id = "sync-default";
-            label = "Default";
-            devices = syncthingCfg.groups.standard;
-          };
-
-          "/home/ctr/syncthing/Calibre" = {
-            id = "sync-calibre";
-            label = "Calibre";
-            devices = syncthingCfg.groups.pcs;
-          };
-        };
-      };
     };
 
   };
