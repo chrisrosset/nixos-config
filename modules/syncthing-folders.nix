@@ -26,7 +26,7 @@ in
         label = "Calibre";
       };
 
-      "${dataDir}/opo-photos" = folder [ "morgoth" ] syncthingData.groups.standard // {
+      "${dataDir}/opo-photos" = folder [ "morgoth" ] syncthingData.groups.oneplusPhotos // {
         id = "cph2551_fhbe-photos";
         label = "OnePlus Open Photos";
       };

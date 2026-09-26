@@ -1,5 +1,6 @@
 {
   devices = {
+    ecolite = { id = "QPTM6A6-GVFTW2G-HUOTXI2-QJMFEAL-Y33RN37-UK3YW2H-IJMDJRB-WC4DPQO"; };
     kraken = { id = "72OEOQW-CVVTDX5-SMWEO7N-ZGQ44NC-DD6MNAY-35HGXVQ-EU5EMLH-3Z5UFQM"; };
     lemur = { id = "NERH7BX-NKD7OGJ-VVTEXLY-24S74DP-ZEZKZPY-XHMVSYD-OKFNYWU-V5K26AT"; };
     morgoth = { id = "LNKLMY5-K24R5GI-LMBAEW3-6HT4WC2-S4LROCC-KWD3KDR-L7RAHZG-GA57NAF"; };
@@ -10,8 +11,9 @@
   };
 
   groups = rec {
-    pcs = [ "kraken" "lemur" "morgoth" ];
+    pcs = [ "ecolite" "kraken" "lemur" "morgoth" ];
     phones = [ "s71a" "open" ];
     standard = pcs ++ phones;
+    oneplusPhotos = [ "kraken" "lemur" "morgoth" ] ++ phones;
   };
 }
