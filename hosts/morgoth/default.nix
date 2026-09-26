@@ -135,6 +135,11 @@ in
       };
     };
 
+    samba-wsdd = {
+      enable = true;
+      openFirewall = true;
+    };
+
     syncthing = {
       enable = true;
       systemService = true;

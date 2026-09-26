@@ -25,17 +25,6 @@ in
   };
 
   services = {
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      publish = {
-        enable = true;
-        userServices = true;
-        addresses = true;
-        domain = true;
-      };
-    };
-
     cron.enable = true;
 
     ntp.enable = true;
