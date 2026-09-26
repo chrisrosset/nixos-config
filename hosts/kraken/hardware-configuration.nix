@@ -12,7 +12,7 @@
   boot = {
     loader.grub = {
       enable = true;
-      device = "/dev/sda";
+      device = "/dev/disk/by-id/usb-VendorCo_ProductCode_3023931131739729567-0:0";
     };
 
     initrd.availableKernelModules = [ "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "nvme" "usb_storage" "usbhid" "sd_mod" ];
