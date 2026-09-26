@@ -13,7 +13,10 @@ lib.mkMerge [
     services.zabbixAgent = {
       enable = true;
       openFirewall = true;
-      server = "ecolite";
+      server = lib.concatStringsSep "," (
+        [ "ecolite" ]
+        ++ lib.optional config.services.zabbixServer.enable "127.0.0.1"
+      );
       settings = {
         HostMetadataItem = [ "system.uname" ];
         ServerActive = "ecolite";
