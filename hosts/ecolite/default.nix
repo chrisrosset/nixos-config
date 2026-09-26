@@ -107,6 +107,8 @@ in
       };
     };
 
+    syncthing.enable = true;
+
     zabbixServer = {
       enable = true;
       openFirewall = true;
