@@ -38,9 +38,15 @@ in
   roles.server = true;
 
   boot = {
+    kernel.sysctl."vm.swappiness" = 10;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
   };
+
+  swapDevices = [{
+    device = "/swapfile";
+    size = 4096;
+  }];
 
   networking = {
     hostName = "ecolite";
