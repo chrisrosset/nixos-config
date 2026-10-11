@@ -2,6 +2,26 @@
 
 let
   sshKeys = import ../data/ssh-keys.nix;
+  hosts = import ../data/hosts-166.nix;
+  lan = {
+    # Be very careful when changing these values.
+    prefix = "192.168.0";
+    domain = "lan";
+  };
+  ipv4 = host: "${lan.prefix}.${toString host.suffix}";
+  fqdn = host: "${host.hostname}.${lan.domain}";
+  mkReservation = host: {
+    name = host.hostname;
+    ip = ipv4 host;
+    inherit (host) mac;
+    dns = "1";
+  };
+  serviceAliases = [
+    { name = "home-assistant-host"; host = hosts.ecolite; }
+    { name = "mqtt-broker"; host = hosts.ecolite; }
+    { name = "zigbee2mqtt-host"; host = hosts.ecolite; }
+    { name = "zigbee-coordinator"; host = hosts.coordinator; }
+  ];
 
   # Shared clock and logging policy; hostnames, compatibility, and LEDs stay local.
   systemSettings = {
@@ -48,6 +68,25 @@ let
   };
 
   sharedManagement = {
+    assertions = [
+      {
+        assertion = builtins.all (
+          host: builtins.isInt host.suffix && host.suffix >= 1 && host.suffix <= 254
+        ) (builtins.attrValues hosts);
+        message = "Site 166 host suffixes must be integers from 1 to 254.";
+      }
+      {
+        assertion =
+          let
+            names = map (host: host.hostname) (builtins.attrValues hosts);
+            suffixes = map (host: host.suffix) (builtins.attrValues hosts);
+          in
+          builtins.length (lib.unique names) == builtins.length names
+          && builtins.length (lib.unique suffixes) == builtins.length suffixes;
+        message = "Site 166 hostnames and IPv4 suffixes must be unique.";
+      }
+    ];
+
     # Replaces the entire file: include every required public key here.
     etc."dropbear/authorized_keys".text =
       lib.concatStringsSep "\n" [
@@ -86,233 +125,24 @@ let
     );
   };
 
-  wifiInterface = radio: {
-    device = radio;
-    network = "lan";
-    mode = "ap";
-    ssid = "LAN-of-the-Free";
-    encryption = "psk2";
-    key._secret = "wifi_password";
-    ieee80211r = "1";
-    # Shared across both bands and APs; matches the previously derived domain.
-    mobility_domain = "ec19";
-    ft_over_ds = "0";
-    ft_psk_generate_local = "1";
+  accessPoints = import ./access-points.nix {
+    inherit
+      lib
+      hosts
+      ipv4
+      sharedManagement
+      configurationOnlySteps
+      attendedSysupgrade
+      systemSettings
+      ntpServers
+      ;
   };
-
-  mkAp =
-    {
-      hostname,
-      address,
-      bridgeMac,
-      ulaPrefix,
-      dhcpDuid,
-      channel2g,
-      channel5g,
-    }:
-    sharedManagement // {
-      # Run on a host whose SSH keys are trusted by the APs.
-      # Use reserved IPs and verify AP host keys under their hostnames.
-      # Deploy one AP at a time; SSH confirmation does not test client connectivity.
-      deploy = {
-        host = address;
-        user = "root";
-        sshConfig.HostKeyAlias = hostname;
-        rebootAllowance = 120;
-        rollbackTimeout = 120;
-      };
-
-      deploySteps = configurationOnlySteps // {
-        disableDnsmasq = {
-          # Stop after UCI is applied so the resolver uses DHCP-supplied DNS.
-          # Keep the package installed; verify DNS again after reboot/upgrades.
-          priority = 100;
-          apply = ''
-            /etc/init.d/dnsmasq disable
-            /etc/init.d/dnsmasq stop
-          '';
-        };
-        enableLuci = {
-          # Requires LuCI in the firmware: package installation is disabled above.
-          # Preserve retained HTTP/HTTPS listeners and root-based web authentication.
-          priority = 110;
-          apply = ''
-            for service in rpcd uhttpd; do
-              if [ ! -x "/etc/init.d/$service" ]; then
-                echo "Cannot enable LuCI: $service is not installed" >&2
-                exit 1
-              fi
-            done
-            /etc/init.d/rpcd enable
-            /etc/init.d/uhttpd enable
-            /etc/init.d/rpcd start
-            /etc/init.d/uhttpd start
-          '';
-        };
-      };
-
-      # UCI packages are replaced wholesale. Dewclaw deletes every configuration
-      # not declared in settings or listed here; retain UI/hardware-owned defaults.
-      uci.retain = [
-        "luci"
-        "rpcd"
-        "ubihealthd"
-        "ubootenv"
-        "uhttpd"
-      ];
-
-      uci.settings = {
-        attendedsysupgrade = attendedSysupgrade;
-
-        # Preserve password login on port 22 alongside the declared public keys.
-        dropbear.dropbear.main = {
-          enable = "1";
-          PasswordAuth = "on";
-          RootPasswordAuth = "on";
-          Port = "22";
-        };
-
-        # LAN-only AP policy: preserve LAN access and reject other input/forwarding.
-        # No logical WAN exists, so omit WAN rules, NAT, and inter-zone forwarding.
-        # Not client isolation; revisit before adding routed networks or VLANs.
-        firewall = {
-          defaults = [
-            {
-              syn_flood = "1";
-              input = "REJECT";
-              output = "ACCEPT";
-              forward = "REJECT";
-            }
-          ];
-          zone.lan = {
-            name = "lan";
-            network = [ "lan" ];
-            input = "ACCEPT";
-            output = "ACCEPT";
-            forward = "ACCEPT";
-          };
-        };
-
-        network = {
-          interface = {
-            loopback = {
-              device = "lo";
-              proto = "static";
-              ipaddr = "127.0.0.1";
-              netmask = "255.0.0.0";
-            };
-            lan = {
-              device = "br-lan";
-              proto = "dhcp";
-            };
-          };
-          globals.globals = {
-            ula_prefix = ulaPrefix;
-            packet_steering = "1";
-            dhcp_default_duid = dhcpDuid;
-          };
-          device = [
-            {
-              name = "br-lan";
-              type = "bridge";
-              ports = [ "lan1" "lan2" "wan" ];
-              # Preserve DHCP reservations across firmware/port-MAC changes.
-              macaddr = bridgeMac;
-            }
-          ];
-        };
-
-        wireless = {
-          wifi-device = {
-            radio0 = {
-              type = "mac80211";
-              path = "platform/soc@0/c000000.wifi";
-              band = "2g";
-              channel = channel2g;
-              htmode = "HE20";
-              cell_density = "0";
-              country = "US";
-            };
-            radio1 = {
-              type = "mac80211";
-              path = "platform/soc@0/b00a040.wifi";
-              band = "5g";
-              channel = channel5g;
-              htmode = "HE80";
-              cell_density = "0";
-              country = "US";
-            };
-          };
-          wifi-iface = {
-            ap_2g = wifiInterface "radio0";
-            ap_5g = wifiInterface "radio1";
-          };
-        };
-
-        system = {
-          system = [
-            (systemSettings // {
-              inherit hostname;
-            })
-          ];
-          timeserver.ntp.server = ntpServers;
-        };
-
-        dhcp = {
-          dnsmasq = [
-            {
-              # Prevent reloads from starting the instance; the step above stops it.
-              disabled = "1";
-              # Also lets the stop handler restore direct upstream DNS resolution.
-              resolvfile = "/tmp/resolv.conf.d/resolv.conf.auto";
-            }
-          ];
-          # No local server/relay role: upstream DHCP/IPv6 crosses the bridge.
-          # The AP's management DHCP client is configured separately in network.
-          dhcp.lan = {
-            interface = "lan";
-            ignore = "1";
-            ra = "disabled";
-            dhcpv6 = "disabled";
-            ndp = "disabled";
-          };
-          odhcpd.odhcpd = {
-            maindhcp = "0";
-            leasefile = "/tmp/odhcpd.leases";
-            leasetrigger = "/usr/sbin/odhcpd-update";
-            loglevel = "4";
-            piodir = "/tmp/odhcpd-piodir";
-            hostsdir = "/tmp/hosts";
-          };
-        };
-      };
-    };
 in
 {
-  openwrt = {
-    gl-b3000-a = mkAp {
-      hostname = "gl-b3000-a";
-      address = "192.168.0.8";
-      bridgeMac = "94:83:c4:a4:d9:f4";
-      ulaPrefix = "fdb4:1dea:9b6d::/48";
-      dhcpDuid = "0004a18a8cac1bf9448ea3f90cb9f72fb52c";
-      channel2g = "1";
-      channel5g = "36";
-    };
-
-    gl-b3000-b = mkAp {
-      hostname = "gl-b3000-b";
-      address = "192.168.0.9";
-      bridgeMac = "94:83:c4:a4:db:2a";
-      ulaPrefix = "fd48:fae3:5e4c::/48";
-      dhcpDuid = "0004554f4cb9cea04d4ca6ff42f47d98f926";
-      channel2g = "11";
-      channel5g = "149";
-    };
-
+  openwrt = accessPoints // {
     router = sharedManagement // {
       deploy = {
-        host = "192.168.0.1";
+        host = ipv4 hosts.router;
         user = "root";
         rebootAllowance = 120;
         rollbackTimeout = 120;
@@ -349,7 +179,7 @@ in
               proto = "static";
               netmask = "255.255.255.0";
               ip6assign = "60";
-              ipaddr = "192.168.0.1";
+              ipaddr = ipv4 hosts.router;
             };
             wan = {
               proto = "dhcp";
@@ -528,8 +358,8 @@ in
               localise_queries = "1";
               rebind_protection = "1";
               rebind_localhost = "1";
-              local = "/lan/";
-              domain = "lan";
+              local = "/${lan.domain}/";
+              domain = lan.domain;
               expandhosts = "1";
               authoritative = "1";
               readethers = "1";
@@ -538,8 +368,7 @@ in
               localservice = "1";
               ednspacket_max = "1232";
               address = [
-                "/*.home.rosset.org.uk/192.168.0.4"
-                "/*.home.rosset.pl/192.168.0.5"
+                "/*.home.rosset.pl/${ipv4 hosts.ecolite}"
                 "/use-application-dns.net/"
               ];
             }
@@ -563,88 +392,27 @@ in
             hostsdir = "/tmp/hosts";
             piodir = "/tmp/odhcpd-piodir";
           };
-          host = [
-            {
-              name = "morgoth";
-              dns = "1";
-              mac = "D0:50:99:51:30:68";
-              ip = "192.168.0.4";
-            }
-            {
-              mac = [ "84:47:09:A2:1A:01" ];
-              ip = "192.168.0.5";
-              name = "ecolite";
-              dns = "1";
-            }
-            {
-              ip = "192.168.0.8";
-              name = "gl-b3000-a";
-              dns = "1";
-              mac = [ "94:83:C4:A4:D9:F4" ];
-              tag = [ "AP" ];
-            }
-            {
-              ip = "192.168.0.9";
-              name = "gl-b3000-b";
-              dns = "1";
-              mac = [ "94:83:C4:A4:DB:2A" ];
-              tag = [ "AP" ];
-            }
-            {
-              ip = "192.168.0.11";
-              name = "SLZB-MR4";
-              dns = "1";
-              mac = [ "00:4B:12:96:1B:3B" ];
-            }
-            {
-              name = "bravia";
-              dns = "1";
-              mac = "94:DB:56:0A:D9:B4";
-              ip = "192.168.0.62";
-            }
-            {
-              name = "denon";
-              dns = "1";
-              mac = "00:05:CD:A1:91:BD";
-              ip = "192.168.0.64";
-            }
-            {
-              mac = "9C:8E:CD:24:53:DA";
-              ip = "192.168.0.75";
-              name = "amc04759-ffa3ef";
-              dns = "1";
-            }
+          host = map mkReservation [
+            hosts.morgoth
+            hosts.ecolite
+            hosts.apA
+            hosts.apB
+            hosts.coordinator
+            hosts.bravia
+            hosts.denon
+            hosts.camera
           ];
-          cname = [
-            {
-              cname = "home-assistant-cname";
-              target = "morgoth";
-            }
-          ];
-          domain = [
-            {
-              name = "home-assistant-host";
-              ip = "192.168.0.5";
-            }
-            {
-              name = "mqtt-broker";
-              ip = "192.168.0.5";
-            }
-            {
-              name = "zigbee2mqtt-host";
-              ip = "192.168.0.5";
-            }
-            {
-              name = "zigbee-coordinator";
-              ip = "192.168.0.11";
-            }
-          ];
+          # Service aliases follow the named reservations' IPv4/IPv6 records.
+          cname = map (alias: {
+            cname = "${alias.name}.${lan.domain}";
+            target = fqdn alias.host;
+          }) serviceAliases;
         };
 
         system = {
           system = [
             (systemSettings // {
-              hostname = "router";
+              hostname = hosts.router.hostname;
               compat_version = "1.1";
             })
           ];

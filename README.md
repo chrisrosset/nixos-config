@@ -21,7 +21,9 @@ sudo nixos-rebuild switch -I "nixos-config=./hosts/$(hostname)"
 OpenWrt configuration is separate from the NixOS modules:
 
 - [`openwrt/default.nix`](./openwrt/default.nix) pins Dewclaw and builds its deployment scripts.
-- [`openwrt/configuration.nix`](./openwrt/configuration.nix) defines `router` (Linksys WRT1200AC) and the shared AP configuration for `gl-b3000-a` and `gl-b3000-b`.
+- [`openwrt/configuration.nix`](./openwrt/configuration.nix) defines `router` (Linksys WRT1200AC), shared fleet settings, and imports the AP definitions.
+- [`openwrt/access-points.nix`](./openwrt/access-points.nix) defines `gl-b3000-a` and `gl-b3000-b`, their Wi-Fi settings, and AP-specific service policies.
+- [`data/hosts-166.nix`](./data/hosts-166.nix) holds site 166 hostnames, IPv4 host suffixes, and reservation MAC addresses. The OpenWrt configuration derives addresses, reservations, and DNS aliases from this inventory; the LAN prefix and service placement remain there.
 
 Build the deployment scripts from the repository root on an `x86_64-linux` machine:
 
@@ -31,7 +33,7 @@ nix-build ./openwrt
 
 This creates `result/bin/deploy-router`, `result/bin/deploy-gl-b3000-a`, and `result/bin/deploy-gl-b3000-b`. Building does not contact or modify the devices. Nixpkgs comes from the local `<nixpkgs>` channel; only Dewclaw is pinned here.
 
-Configuration rationale, ownership, and service behavior are documented alongside the declarations in [`openwrt/configuration.nix`](./openwrt/configuration.nix).
+Configuration rationale, ownership, and service behavior are documented alongside the declarations in [`openwrt/configuration.nix`](./openwrt/configuration.nix) and [`openwrt/access-points.nix`](./openwrt/access-points.nix).
 
 Before deploying any device, use the SOPS-encrypted [`openwrt/secrets.json`](./openwrt/secrets.json), whose decrypted JSON object contains:
 
@@ -43,5 +45,4 @@ Generate the root password hash locally with `openssl passwd -6` and store the c
 Set `DEWCLAW_SECRETS_FILE` to the encrypted file's path. The deploying user also needs access to the SOPS decryption key. Secrets are decrypted at deployment time, not embedded in Nix outputs. Do not commit plaintext credentials, decryption keys, or unencrypted router backups.
 
 The router baseline was verified after upgrading to OpenWrt 25.12.5. Deployment intentionally replaces its root password and authorized keys with the APs' shared password and lemur/ecolite public keys. SSH password login remains disabled on the router; LuCI uses the shared root password.
-
-Run deployment from a host whose SSH keys the target accepts, one device at a time, with a current backup and wired recovery access. Deployment reboots the target; rebooting the main router interrupts Internet access and may interrupt the deployment connection. Verify management, clients, DHCP/DNS, and IPv6 afterward. The AP configuration has been deployed and verified; the router declaration has not yet been deployed.
+Run deployment from a host whose SSH keys the target accepts, one device at a time, with a current backup and wired recovery access. Deployment reboots the target; rebooting the main router interrupts Internet access and may interrupt the deployment connection.
