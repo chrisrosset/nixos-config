@@ -5,7 +5,7 @@ let
   hosts = import ../data/hosts-166.nix;
   lan = {
     # Be very careful when changing these values.
-    prefix = "192.168.0";
+    prefix = "10.166.0";
     domain = "lan";
   };
   ipv4 = host: "${lan.prefix}.${toString host.suffix}";

@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { } }:
+{ pkgs ? import <nixpkgs> { }, configuration ? ./configuration.nix }:
 
 let
   dewclaw = builtins.fetchTarball {
@@ -7,6 +7,5 @@ let
   };
 in
 import dewclaw {
-  inherit pkgs;
-  configuration = ./configuration.nix;
+  inherit pkgs configuration;
 }
