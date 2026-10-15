@@ -32,8 +32,8 @@
     };
 
   fileSystems."/mnt/shuck" = {
-    device = "/dev/disk/by-uuid/3C9835089834C1E6";
-    fsType = "ntfs";
+    device = "/dev/disk/by-uuid/e99e8c95-de0b-4cb9-af2c-e76b79a4fbea";
+    fsType = "ext4";
     options = [ "nofail" ];
   };
 
