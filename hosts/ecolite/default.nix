@@ -9,6 +9,8 @@ let
 
   ports = {
     homeassistant = 8123;
+    mosquitto = 1883;
+    samba = 445;
     syncthing = 8384;
     vaultwarden = 8006;
     zabbix = 8081;
@@ -50,7 +52,18 @@ in
 
   networking = {
     hostName = "ecolite";
-    firewall.enable = false;
+    firewall = {
+      enable = true;
+      interfaces = lib.genAttrs [ "enp1s0" "tailscale0" ] (_: {
+        allowedTCPPorts = [
+          ports.samba
+          ports.homeassistant
+          ports.mosquitto
+          ports.zabbix
+          ports.zigbee2mqtt
+        ];
+      });
+    };
   };
 
   security.acme = {
@@ -69,6 +82,33 @@ in
   };
 
   services = {
+    samba = {
+      enable = true;
+      # Opens unnecessary NetBIOS ports on all interfaces.
+      openFirewall = false;
+      nmbd.enable = false;
+      winbindd.enable = false;
+      settings = {
+        global = {
+          "server min protocol" = "SMB3_00";
+          "smb ports" = toString ports.samba;
+          "map to guest" = "Bad User";
+          "guest account" = "nobody";
+        };
+        public = {
+          path = "/mnt/cache/data/public";
+          "guest ok" = "yes";
+          "read only" = "yes";
+        };
+        data = {
+          path = "/mnt/cache/data";
+          "guest ok" = "no";
+          "valid users" = "ctr";
+          "read only" = "no";
+        };
+      };
+    };
+
     nginx = {
       enable = true;
       user = "http";
@@ -127,6 +167,18 @@ in
         listen = [{ port = ports.zabbix; addr = "0.0.0.0"; }];
       };
     };
+  };
+
+  systemd.services.samba-smbd = {
+    # The cache mount is optional at boot, but must exist before sharing data.
+    unitConfig.RequiresMountsFor = [ "/mnt/cache" ];
+    preStart = ''
+      test -d /mnt/cache/data
+      ${pkgs.coreutils}/bin/install -d -m 0755 -o ctr -g users /mnt/cache/data/public
+      # Grant guest traversal without listing private parent directories.
+      ${pkgs.acl}/bin/setfacl -m u:nobody:--x /mnt/cache /mnt/cache/data
+      ${pkgs.acl}/bin/setfacl -m u:nobody:r-x,d:u:nobody:r-x /mnt/cache/data/public
+    '';
   };
 
   system.stateVersion = "26.05";
