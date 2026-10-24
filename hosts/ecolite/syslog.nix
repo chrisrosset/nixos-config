@@ -32,6 +32,7 @@ in
             }
           }
           .host = .hostname
+          ._HOSTNAME = .hostname
           .level = .severity
           if .level == "crit" {
             .level = "critical"
@@ -45,7 +46,7 @@ in
         inputs = [ "normalize_syslog" ];
         uri = "http://127.0.0.1:9428/insert/jsonline"
           + "?_msg_field=message&_time_field=timestamp"
-          + "&_stream_fields=hostname,appname";
+          + "&_stream_fields=_HOSTNAME,appname";
         encoding.codec = "json";
         framing.method = "newline_delimited";
         compression = "gzip";
