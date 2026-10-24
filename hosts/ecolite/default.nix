@@ -82,6 +82,8 @@ in
   };
 
   services = {
+    tailscale.extraSetFlags = [ "--advertise-routes=10.166.0.0/24" ];
+
     samba = {
       enable = true;
       # Opens unnecessary NetBIOS ports on all interfaces.
