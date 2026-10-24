@@ -9,8 +9,10 @@ let
 
   ports = {
     homeassistant = 8123;
+    logs = 9428;
     mosquitto = 1883;
     samba = 445;
+    syslog = 1514;
     syncthing = 8384;
     vaultwarden = 8006;
     zabbix = 8081;
@@ -54,14 +56,16 @@ in
     hostName = "ecolite";
     firewall = {
       enable = true;
-      interfaces = lib.genAttrs [ "enp1s0" "tailscale0" ] (_: {
+      interfaces = lib.genAttrs [ "enp1s0" "tailscale0" ] (interface: {
         allowedTCPPorts = [
           ports.samba
           ports.homeassistant
+          ports.logs
           ports.mosquitto
           ports.zabbix
           ports.zigbee2mqtt
-        ];
+        ] ++ lib.optional (interface == "enp1s0") ports.syslog;
+        allowedUDPPorts = lib.optional (interface == "enp1s0") ports.syslog;
       });
     };
   };
@@ -82,6 +86,33 @@ in
   };
 
   services = {
+    victorialogs = {
+      enable = true;
+      listenAddress = ":${toString ports.logs}";
+      extraOptions = [
+        "-retention.maxDiskSpaceUsageBytes=32GiB"
+        "-retentionPeriod=100y"
+        "-syslog.listenAddr.tcp=:${toString ports.syslog}"
+        "-syslog.listenAddr.udp=:${toString ports.syslog}"
+        "-syslog.timezone=${config.time.timeZone}"
+        "-journald.streamFields=_MACHINE_ID,_HOSTNAME,_SYSTEMD_UNIT,CONTAINER_NAME"
+      ];
+    };
+
+    journald = {
+      settings.Journal = {
+        Storage = "persistent";
+        SystemMaxUse = "512M";
+      };
+      upload = {
+        enable = true;
+        settings.Upload = {
+          URL = "http://127.0.0.1:${toString ports.logs}/insert/journald";
+          NetworkTimeoutSec = "30s";
+        };
+      };
+    };
+
     samba = {
       enable = true;
       # Opens unnecessary NetBIOS ports on all interfaces.
@@ -167,6 +198,11 @@ in
         listen = [{ port = ports.zabbix; addr = "0.0.0.0"; }];
       };
     };
+  };
+
+  systemd.services.systemd-journal-upload = {
+    wants = [ "victorialogs.service" ];
+    after = [ "victorialogs.service" ];
   };
 
   systemd.services.samba-smbd = {
