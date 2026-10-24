@@ -57,17 +57,17 @@ in
     hostName = "ecolite";
     firewall = {
       enable = true;
+      allowedTCPPorts = [ ports.syslog ];
+      allowedUDPPorts = [ ports.syslog ];
       interfaces = lib.genAttrs [ "enp1s0" "tailscale0" ] (_: {
         allowedTCPPorts = [
           ports.samba
           ports.homeassistant
           ports.logs
           ports.mosquitto
-          ports.syslog
           ports.zabbix
           ports.zigbee2mqtt
         ];
-        allowedUDPPorts = [ ports.syslog ];
       });
     };
   };
