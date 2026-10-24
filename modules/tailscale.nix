@@ -6,8 +6,12 @@
 
     enable = true;
 
-    # Servers offer Tailscale SSH and exit-node routing; personal devices do not.
-    extraSetFlags = lib.optionals config.roles.server [
+    extraSetFlags = [
+      # These are here to enable resolving *.home.rosset.pl via SplitDNS.
+      "--accept-dns=true"
+      "--accept-routes=true"
+    ] ++ lib.optionals config.roles.server [
+      # Servers offer Tailscale SSH and exit-node routing; personal devices do not.
       "--advertise-exit-node"
       "--ssh"
     ];
