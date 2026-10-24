@@ -361,7 +361,8 @@ in
               localise_queries = "1";
               rebind_protection = "1";
               rebind_localhost = "1";
-              local = "/${lan.domain}/";
+              # Keep AAAA and other queries from returning public home-domain CNAMEs.
+              local = "/${lan.domain}/home.rosset.pl/";
               domain = lan.domain;
               expandhosts = "1";
               authoritative = "1";
