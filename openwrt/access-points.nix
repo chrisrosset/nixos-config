@@ -6,7 +6,6 @@
   configurationOnlySteps,
   attendedSysupgrade,
   systemSettings,
-  ntpServers,
 }:
 
 let
@@ -177,7 +176,11 @@ let
               inherit (host) hostname;
             })
           ];
-          timeserver.ntp.server = ntpServers;
+          # Use the router as the NTP server.
+          timeserver.ntp = {
+            server = [ (ipv4 hosts.router) ];
+            use_dhcp = "0";
+          };
         };
 
         dhcp = {

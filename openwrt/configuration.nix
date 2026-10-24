@@ -138,7 +138,6 @@ let
       configurationOnlySteps
       attendedSysupgrade
       systemSettings
-      ntpServers
       ;
   };
 in
