@@ -7,6 +7,7 @@
     coreutils
     curl
     direnv
+    dnsutils
     fdupes
     file
     fswatch
