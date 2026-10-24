@@ -20,7 +20,7 @@ in
         enable = true;
         settings.Upload = {
           URL = "http://${logging.host.hostname}:${toString logging.ports.http}/insert/journald";
-          NetworkTimeoutSec = "30s";
+          NetworkTimeoutSec = "15m";
         };
       };
     };
