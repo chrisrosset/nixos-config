@@ -134,6 +134,7 @@ in
       virtualHosts = builtins.listToAttrs (map (x: mkVirtualHost x.svc x.port) [
         { svc = "ha"; port = ports.homeassistant; }
         { svc = "z2m"; port = ports.zigbee2mqtt; }
+        { svc = "logs"; port = ports.logs; }
         { svc = "zabbix"; port = ports.zabbix; }
       ]) // {
 
