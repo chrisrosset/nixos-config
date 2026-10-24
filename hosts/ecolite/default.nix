@@ -2,7 +2,7 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, options, pkgs, ... }:
 let
   domain = "rosset.pl";
   subdomain = "home";
@@ -99,11 +99,17 @@ in
       ];
     };
 
-    journald = {
+    journald = (if options.services.journald ? settings then {
       settings.Journal = {
         Storage = "persistent";
         SystemMaxUse = "512M";
       };
+    } else {
+      storage = "persistent";
+      extraConfig = ''
+        SystemMaxUse=512M
+      '';
+    }) // {
       upload = {
         enable = true;
         settings.Upload = {
