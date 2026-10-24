@@ -414,6 +414,11 @@ in
             (systemSettings // {
               hostname = hosts.router.hostname;
               compat_version = "1.1";
+              # Forward only router logs; APs retain local-only logging.
+              log_remote = "1";
+              log_ip = ipv4 hosts.ecolite;
+              log_port = "1514";
+              log_proto = "tcp";
             })
           ];
           timeserver.ntp = {

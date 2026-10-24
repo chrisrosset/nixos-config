@@ -2,7 +2,7 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   domain = "rosset.pl";
   subdomain = "home";
@@ -36,6 +36,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./syslog.nix
       ../../modules/base.nix
     ];
 
@@ -56,16 +57,17 @@ in
     hostName = "ecolite";
     firewall = {
       enable = true;
-      interfaces = lib.genAttrs [ "enp1s0" "tailscale0" ] (interface: {
+      interfaces = lib.genAttrs [ "enp1s0" "tailscale0" ] (_: {
         allowedTCPPorts = [
           ports.samba
           ports.homeassistant
           ports.logs
           ports.mosquitto
+          ports.syslog
           ports.zabbix
           ports.zigbee2mqtt
-        ] ++ lib.optional (interface == "enp1s0") ports.syslog;
-        allowedUDPPorts = lib.optional (interface == "enp1s0") ports.syslog;
+        ];
+        allowedUDPPorts = [ ports.syslog ];
       });
     };
   };
@@ -92,32 +94,10 @@ in
       extraOptions = [
         "-retention.maxDiskSpaceUsageBytes=32GiB"
         "-retentionPeriod=100y"
-        "-syslog.listenAddr.tcp=:${toString ports.syslog}"
-        "-syslog.listenAddr.udp=:${toString ports.syslog}"
-        "-syslog.timezone=${config.time.timeZone}"
         "-journald.streamFields=_MACHINE_ID,_HOSTNAME,_SYSTEMD_UNIT,CONTAINER_NAME"
       ];
     };
 
-    journald = (if options.services.journald ? settings then {
-      settings.Journal = {
-        Storage = "persistent";
-        SystemMaxUse = "512M";
-      };
-    } else {
-      storage = "persistent";
-      extraConfig = ''
-        SystemMaxUse=512M
-      '';
-    }) // {
-      upload = {
-        enable = true;
-        settings.Upload = {
-          URL = "http://127.0.0.1:${toString ports.logs}/insert/journald";
-          NetworkTimeoutSec = "30s";
-        };
-      };
-    };
     tailscale.extraSetFlags = [ "--advertise-routes=10.166.0.0/24" ];
 
     samba = {
