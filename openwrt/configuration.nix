@@ -3,6 +3,7 @@
 let
   sshKeys = import ../data/ssh-keys.nix;
   hosts = import ../data/hosts-166.nix;
+  logging = import ../data/logging.nix;
   lan = {
     # Be very careful when changing these values.
     prefix = "10.166.0";
@@ -31,7 +32,10 @@ let
     cronloglevel = "5";
     ttylogin = "0";
     urandom_seed = "0";
-    log_proto = "udp";
+    log_remote = "1";
+    log_ip = ipv4 logging.host;
+    log_port = toString logging.ports.syslog;
+    log_proto = "tcp";
     conloglevel = "8";
   };
 

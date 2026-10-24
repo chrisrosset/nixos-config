@@ -2,15 +2,18 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 let
+  logging = import ../../data/logging.nix;
   domain = "rosset.pl";
   subdomain = "home";
 
   ports = {
     homeassistant = 8123;
+    logs = logging.ports.http;
     mosquitto = 1883;
     samba = 445;
+    syslog = logging.ports.syslog;
     syncthing = 8384;
     vaultwarden = 8006;
     zabbix = 8081;
@@ -34,6 +37,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./syslog.nix
       ../../modules/base.nix
     ];
 
@@ -54,15 +58,16 @@ in
     hostName = "ecolite";
     firewall = {
       enable = true;
-      interfaces = lib.genAttrs [ "enp1s0" "tailscale0" ] (_: {
-        allowedTCPPorts = [
-          ports.samba
-          ports.homeassistant
-          ports.mosquitto
-          ports.zabbix
-          ports.zigbee2mqtt
-        ];
-      });
+      allowedTCPPorts = [
+        ports.samba
+        ports.homeassistant
+        ports.logs
+        ports.mosquitto
+        ports.syslog
+        ports.zabbix
+        ports.zigbee2mqtt
+      ];
+      allowedUDPPorts = [ ports.syslog ];
     };
   };
 
@@ -82,6 +87,16 @@ in
   };
 
   services = {
+    victorialogs = {
+      enable = true;
+      listenAddress = ":${toString ports.logs}";
+      extraOptions = [
+        "-retention.maxDiskSpaceUsageBytes=32GiB"
+        "-retentionPeriod=100y"
+        "-journald.streamFields=_MACHINE_ID,_HOSTNAME,_SYSTEMD_UNIT,CONTAINER_NAME"
+      ];
+    };
+
     tailscale.extraSetFlags = [ "--advertise-routes=10.166.0.0/24" ];
 
     samba = {
@@ -118,6 +133,7 @@ in
       virtualHosts = builtins.listToAttrs (map (x: mkVirtualHost x.svc x.port) [
         { svc = "ha"; port = ports.homeassistant; }
         { svc = "z2m"; port = ports.zigbee2mqtt; }
+        { svc = "logs"; port = ports.logs; }
         { svc = "zabbix"; port = ports.zabbix; }
       ]) // {
 
@@ -169,6 +185,11 @@ in
         listen = [{ port = ports.zabbix; addr = "0.0.0.0"; }];
       };
     };
+  };
+
+  systemd.services.systemd-journal-upload = {
+    wants = [ "victorialogs.service" ];
+    after = [ "victorialogs.service" ];
   };
 
   systemd.services.samba-smbd = {
