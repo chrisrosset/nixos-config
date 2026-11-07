@@ -13,5 +13,7 @@
       dates = "weekly";
       randomizedDelaySec = "45min";
     };
+
+    settings.experimental-features = [ "flakes" "nix-command" ];
   };
 }
