@@ -19,7 +19,7 @@
     };
 
   fileSystems."/mnt/cache" =
-    { device = "/dev/disk/by-uuid/cb90ee6f-e901-4751-81b4-38f01c8da4d6";
+    { device = "/dev/disk/by-uuid/88eb06fb-4897-4a86-899a-266942706785";
       fsType = "ext4";
       options = [ "nofail" ];
     };
